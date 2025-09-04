@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 ''':'
 BIN="${PYTHON_BIN:-python3}"
-if ! command -v "$BIN" >/dev/null 2>&1; then
-    echo "python binary '$BIN' not found" >&2
-    exit 127
-fi
 exec "$BIN" "$0" "$@"
 ':'''
 
@@ -21,6 +17,6 @@ else:
     if os.path.exists(fname):
         with open(fname) as fobj:
             lines = fobj.readlines()
-        sys.stdout.write('{} lines in {}\n'.format(len(lines), fname))
+        sys.stdout.write('{} lines in {}\n'.format(len(lines)-1, fname))
     else:
         sys.stdout.write('{} not found\n'.format(fname))

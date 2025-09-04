@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 exec ${PYTHON_BIN:-python3} - "$@" <<'EOF'
 
@@ -15,7 +15,11 @@ else:
         with open(fname) as fobj:
             lines = fobj.readlines()
         sys.stdout.write('{} lines in {}\n'.format(len(lines), fname))
+        fobj = open(fname)
+        lines = fobj.readlines()
+        fobj.close()
+        sys.stdout.write('%d lines in %s\n' % (len(lines), fname))
     else:
         sys.stdout.write('{} not found\n'.format(fname))
-
+        sys.stdout.write('%s not found\n' % (fname,))
 EOF

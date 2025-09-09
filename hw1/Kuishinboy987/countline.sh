@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 if [ $# -lt 1 ]; then
     echo "missinf file name"

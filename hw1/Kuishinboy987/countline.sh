@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -lt 1 ]; then
-    echo "missinf file name"
+    echo "missing file name"
 elif [ $# -gt 1 ]; then
     echo "only one argument is allowed"
 else

@@ -2,7 +2,6 @@
 '''exec' "${PYTHON_BIN:-python3}" "$0" "$@"
 ' '''
 
-print("debug")
 import sys
 import os.path
 

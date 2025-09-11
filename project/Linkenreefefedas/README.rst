@@ -1,12 +1,74 @@
-Contiguous N-Dimensional Array
+CNDA
 ==============================
 
 A compact C++11/Python library for cache-friendly N-dimensional arrays with struct support and zero-copy NumPy interoperability.
 
 Basic Information
 -----------------
-- GitHub Repository: https://github.com/Linkenreefefedas/Contiguous_N-Dimensional_Array.git
+- GitHub Repository: https://github.com/Linkenreefefedas/CNDA.git
 - About: A lightweight C++11/Python library that provides contiguous multi-dimensional arrays with clean indexing, zero-copy NumPy interoperability, and support for both fundamental and composite (struct) types.
+- Footprint:
+   - Core (C++11): header-only, no external dependencies beyond the standard library.
+   - Interop (pybind11): compiled Python extension built against pybind11 and NumPy headers.
+
+Comparison: SimpleArray vs CNDA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. list-table::
+   :header-rows: 1
+   :widths: 18 36 36 36
+
+   * - Aspect
+     - `SimpleArray <https://github.com/solvcon/modmesh/blob/master/tests/test_buffer.py>`_
+     - CNDA (proposal)
+     - Key difference
+   * - Scope / Goal
+     - Container with many numerical ops such as sum, mean, var, std, sort, argsort, broadcast, and ghost
+     - Minimal container with a clear C++/NumPy interop policy and a minimal AoS bridge
+     - CNDA narrows scope and focuses on interop
+   * - Memory layout
+     - Row-major contiguous, supports reshape and transpose
+     - Row-major contiguous, prefers zero-copy with explicit copy fallback
+     - CNDA emphasizes a policy-driven choice between sharing and copying
+   * - Indexing API
+     - Flat and multi-dimensional. Supports slicing, ellipsis, broadcasting
+     - NumPy-like ``operator()``. Slicing and broadcasting are deferred in v0.1
+     - CNDA keeps indexing simple in v0.1
+   * - Dtype coverage
+     - Booleans, integers, floats, and complex numbers
+     - POD only in v0.1 (f32/f64/i32/i64)
+     - CNDA limits types to stabilize interop
+   * - Composite types (AoS/SoA)
+     - No first-class AoS/SoA or mapping to structured dtypes
+     - Minimal AoS with NumPy structured dtype (field order/size/alignment validated)
+     - CNDA adds a bridge between AoS and structured dtypes
+   * - Ghost zone
+     - Built-in nghost semantics and checks
+     - Not supported in v0.1
+     - CNDA defers ghost zones to upper layers
+   * - Numerical calculators
+     - Many built-in calculators, including some SIMD variants
+     - None in v0.1. Use NumPy for computation
+     - CNDA stays lightweight and relies on NumPy
+   * - Transformations
+     - Reshape and transpose. Can update in-place or return new view
+     - Returns NumPy view or copy via ``to_numpy(copy=...)``
+     - CNDA focuses on interop rather than rich transforms
+   * - Interop policy
+     - Shares with NumPy, described across APIs/tests
+     - Explicit policy: zero-copy only if dtype, layout, and lifetime match. Otherwise error or ``copy=True``
+     - CNDA makes sharing and copying rules explicit and predictable
+   * - Errors & safety
+     - Raises errors on mismatches, out-of-range access, or invalid ghost settings
+     - Consistent ``TypeError``, ``ValueError``, ``RuntimeError`` with clear messages
+     - CNDA standardizes error classes and messages
+   * - SIMD / performance
+     - Some SIMD-optimized calculators
+     - Not a v0.1 goal
+     - Different focus: ops in SimpleArray vs interop in CNDA
+   * - Build footprint
+     - Python-facing bindings
+     - Core is header-only. Interop is a compiled pybind11 extension
+     - CNDA minimizes dependencies with a clean split between core and interop
 
 Problem to Solve
 ----------------
@@ -18,9 +80,9 @@ However, existing approaches in C++ and Python interoperation expose several cri
 2. **Performance and memory overhead** 
  Data exchange often requires redundant copies that waste memory and slow performance.  
 3. **Lack of composite type support** 
- Storing multiple variables per grid point needs AoS/SoA layouts, which lightweight libraries rarely provide.  
-4. **Unclear API design** 
- Users expect NumPy-like clean syntax, but C++ APIs often expose cumbersome low-level details.
+ Storing multiple values per grid point often needs AoS/SoA layouts, but most C++ array libraries lack built-in support or NumPy interoperability.  
+4. **Hard-to-use indexing & copy-policy ambiguity** 
+ In C++ one often writes manual stride math like `i*stride0 + j*stride1` for indexing, and it is not always clear when arrays share memory or are copied. 
 
 Prospective Users
 -----------------
@@ -168,6 +230,18 @@ Python API (module ``cnda``)
   assert x[1, 2] == 42
   assert y.ctypes.data == x.ctypes.data  # same buffer
 
+**Structured dtype (AoS) example**
+
+.. code-block:: python
+
+  import numpy as np, cnda
+
+  cell_dtype = np.dtype([('u','<f4'), ('v','<f4'), ('flag','<i4')], align=True)
+  arr = np.zeros((nx, ny), dtype=cell_dtype, order='C')
+
+  a = cnda.from_numpy(arr, copy=False)  # zero-copy only if field order/size/alignment match the C++ struct
+  out = a.to_numpy(copy=False)          # view when safe; use copy=True to isolate lifetime
+
 **Allocate on C++ side and expose to NumPy**
 
 .. code-block:: python
@@ -221,13 +295,13 @@ Automatic build
 ~~~~~~~~~~~~~~~
 Prereqs: CMake (>=3.18), C++11 compiler, Python 3.9+.
 
-**C++ core**
+**C++ core** (header-only; build here is only for tests and examples)
 ::
   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
   cmake --build build -j
   ctest --test-dir build --output-on-failure
 
-**Python binding (after pybind11 lands)**
+**Python binding** (requires pybind11 and NumPy headers)
 ::
   python -m venv .venv
   # Windows: .\.venv\Scripts\activate
@@ -256,14 +330,14 @@ Schedule
 --------
 8-week plan; Weeks 1–6 focus on core; Weeks 7–8 on integration/delivery.
 
-- Week 1: Initialize repository and CMake; build minimal `ContiguousND<float>` with shape/strides and basic tests.  
-- Week 2: Extend to multiple scalar types; add clean indexing via `operator()` with error handling.  
-- Week 3: Implement pybind11 bindings; enable NumPy interop with zero-copy validation and pytest.  
-- Week 4: Strengthen zero-copy safety (ownership, capsule deleter); add explicit copy path and debug bounds checks.  
-- Week 5: Demonstrate POD AoS usage with examples; run micro-benchmarks and refine API.  
-- Week 6: Improve documentation and tutorials.  
-- Week 7: Freeze v0.1 API; finalize comprehensive tests and cross-platform validation.  
-- Week 8: Polish documentation; release v0.1.0 and deliver presentation/demo.
+- Week 1 (10/20) : Initialize repository and CMake; build minimal `ContiguousND<float>` with shape/strides and basic tests.  
+- Week 2 (10/27) : Extend to multiple scalar types; add clean indexing via `operator()` with error handling.  
+- Week 3 (11/3) : Implement pybind11 bindings; enable NumPy interop with zero-copy validation and pytest.  
+- Week 4 (11/10) : Strengthen zero-copy safety (ownership, capsule deleter); add explicit copy path and debug bounds checks.  
+- Week 5 (11/17) : Demonstrate POD AoS usage with examples; run micro-benchmarks and refine API.  
+- Week 6 (11/24) : Improve documentation and tutorials.  
+- Week 7 (12/1) : Freeze v0.1 API; finalize comprehensive tests and cross-platform validation.  
+- Week 8 (12/8) : Polish documentation; release v0.1.0 and deliver presentation/demo.
 
 References
 ----------

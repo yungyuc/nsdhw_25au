@@ -53,8 +53,8 @@ Follow the format to add your project:
    `Project subject <github_account_name/README.rst>`__:
    https://github.com/github_account_name/project_name
 1. `Linkenreefefedas <https://github.com/Linkenreefefedas>`__ for
-   `Contiguous N-Dimensional Array <https://github.com/Linkenreefefedas/Contiguous_N-Dimensional_Array/blob/main/README.rst>`__:
-   https://github.com/Linkenreefefedas/Contiguous_N-Dimensional_Array
+   `CNDA <https://github.com/Linkenreefefedas/CNDA/blob/main/README.rst>`__:
+   https://github.com/Linkenreefefedas/CNDA
 
 .. note::
 

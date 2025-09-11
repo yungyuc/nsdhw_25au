@@ -66,7 +66,7 @@ Comparison: SimpleArray vs CNDA
      - Not a v0.1 goal
      - Different focus: ops in SimpleArray vs interop in CNDA
    * - Build footprint
-     - Python-facing bindings
+     - C++ core with pybind11 bindings
      - Core is header-only. Interop is a compiled pybind11 extension
      - CNDA minimizes dependencies with a clean split between core and interop
 

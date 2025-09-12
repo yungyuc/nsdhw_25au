@@ -22,7 +22,7 @@ Comparison: SimpleArray vs CNDA
      - CNDA (proposal)
    * - C++↔NumPy interop
      - Zero-copy from ndarray and view back. Dtype mismatch raises error
-     - Explicit interop policy. Zero-copy only when safe. Clear copy path with `from_numpy()` and `to_numpy(copy=...)`
+     - Explicit interop policy. Zero-copy only when safe. Clear copy path with `from_numpy(copy=...)` and `to_numpy(copy=...)`
    * - Transpose and strides
      - Supports transpose. Some axis orders share memory and others do not
      - Documents which axis orders share memory. Zero-copy when stride reinterpretation is valid. Otherwise copy

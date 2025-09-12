@@ -15,60 +15,26 @@ Comparison: SimpleArray vs CNDA
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. list-table::
    :header-rows: 1
-   :widths: 18 36 36 36
+   :widths: 20 40 40
 
    * - Aspect
      - `SimpleArray <https://github.com/solvcon/modmesh/blob/master/tests/test_buffer.py>`_
      - CNDA (proposal)
-     - Key difference
-   * - Scope / Goal
-     - Container with many numerical ops such as sum, mean, var, std, sort, argsort, broadcast, and ghost
-     - Minimal container with a clear C++/NumPy interop policy and a minimal AoS bridge
-     - CNDA narrows scope and focuses on interop
-   * - Memory layout
-     - Row-major contiguous, supports reshape and transpose
-     - Row-major contiguous, prefers zero-copy with explicit copy fallback
-     - CNDA emphasizes a policy-driven choice between sharing and copying
-   * - Indexing API
-     - Flat and multi-dimensional. Supports slicing, ellipsis, broadcasting
-     - NumPy-like ``operator()``. Slicing and broadcasting are deferred in v0.1
-     - CNDA keeps indexing simple in v0.1
-   * - Dtype coverage
-     - Booleans, integers, floats, and complex numbers
-     - POD only in v0.1 (f32/f64/i32/i64)
-     - CNDA limits types to stabilize interop
-   * - Composite types (AoS/SoA)
-     - No first-class AoS/SoA or mapping to structured dtypes
-     - Minimal AoS with NumPy structured dtype (field order/size/alignment validated)
-     - CNDA adds a bridge between AoS and structured dtypes
-   * - Ghost zone
-     - Built-in nghost semantics and checks
-     - Not supported in v0.1
-     - CNDA defers ghost zones to upper layers
-   * - Numerical calculators
-     - Many built-in calculators, including some SIMD variants
-     - None in v0.1. Use NumPy for computation
-     - CNDA stays lightweight and relies on NumPy
-   * - Transformations
-     - Reshape and transpose. Can update in-place or return new view
-     - Returns NumPy view or copy via ``to_numpy(copy=...)``
-     - CNDA focuses on interop rather than rich transforms
-   * - Interop policy
-     - Shares with NumPy, described across APIs/tests
-     - Explicit policy: zero-copy only if dtype, layout, and lifetime match. Otherwise error or ``copy=True``
-     - CNDA makes sharing and copying rules explicit and predictable
-   * - Errors & safety
-     - Raises errors on mismatches, out-of-range access, or invalid ghost settings
-     - Consistent ``TypeError``, ``ValueError``, ``RuntimeError`` with clear messages
-     - CNDA standardizes error classes and messages
-   * - SIMD / performance
-     - Some SIMD-optimized calculators
-     - Not a v0.1 goal
-     - Different focus: ops in SimpleArray vs interop in CNDA
-   * - Build footprint
-     - C++ core with pybind11 bindings
-     - Core is header-only. Interop is a compiled pybind11 extension
-     - CNDA minimizes dependencies with a clean split between core and interop
+   * - C++↔NumPy interop
+     - Zero-copy from ndarray and view back. Dtype mismatch raises error
+     - Explicit interop policy. Zero-copy only when safe. Clear copy path with `from_numpy()` and `to_numpy(copy=...)`
+   * - Transpose and strides
+     - Supports transpose. Some axis orders share memory and others do not
+     - Documents which axis orders share memory. Zero-copy when stride reinterpretation is valid. Otherwise copy
+   * - AoS bridge
+     - Numeric tensors only
+     - Minimal AoS bridge. NumPy structured dtypes map to C++ structs with guaranteed field order and alignment
+   * - Core scope
+     - Container plus numeric utilities and ghost cell concept
+     - Minimal core with container, interop, and layout
+   * - Types and compute
+     - Multiple types with built-in stats and checks
+     - POD types float32, float64, int32, int64. Heavy computations stay in NumPy or higher layers
 
 Problem to Solve
 ----------------
@@ -80,7 +46,7 @@ However, existing approaches in C++ and Python interoperation expose several cri
 2. **Performance and memory overhead** 
  Data exchange often requires redundant copies that waste memory and slow performance.  
 3. **Lack of composite type support** 
- Storing multiple values per grid point often needs AoS/SoA layouts, but most C++ array libraries lack built-in support or NumPy interoperability.  
+ Storing multiple values per grid point often needs AoS/SoA layouts, but most C++ array libraries (e.g., Eigen, xtensor) lack built-in AoS/SoA abstractions and provide limited NumPy interoperability, especially for composite struct types. 
 4. **Hard-to-use indexing & copy-policy ambiguity** 
  In C++ one often writes manual stride math like `i*stride0 + j*stride1` for indexing, and it is not always clear when arrays share memory or are copied. 
 

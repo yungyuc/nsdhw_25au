@@ -52,6 +52,9 @@ Follow the format to add your project:
 0. `github_account_name <https://github.com/github_account_name>`__ for
    `Project subject <github_account_name/README.rst>`__:
    https://github.com/github_account_name/project_name
+1. `Linkenreefefedas <https://github.com/Linkenreefefedas>`__ for
+   `CNDA <https://github.com/Linkenreefefedas/CNDA/blob/main/README.rst>`__:
+   https://github.com/Linkenreefefedas/CNDA
 
 .. note::
 

@@ -8,7 +8,7 @@ Basic Information
 - **GitHub Repository URL**: https://github.com/ryankert01/voronoi-diagram-toolkit  
 - The toolkit provides both low-level C++ APIs (for performance) and high-level Python APIs (for usability).
 - **A high-performance C++/Python toolkit** for 2D Voronoi diagram construction and nearest neighbor querying, supporting computational - geometry scenarios like mesh generation. 
-  Also, I'm planing support visualization in fewer points scenarios(less than 100 points).
+  Also, I'm planning to support visualization in fewer-point scenarios(fewer than 100 points).
 
 
 Problem to Solve
@@ -151,8 +151,8 @@ Schedule
 
 * Week 1 (09/22): Build a prototype for fortune algorithms. Identify the core algorithms.
 * Week 2 (09/29): Develop C++ testcases for the fortune algorithm code.
-* Week 3 (10/06): Redesign and construct the prototype code and make it neet and meet our needs(eg. visualization). w/tests
-* Week 4 (10/27): Redesign and construct the prototype code and make it neet and meet our needs(eg. visualization). w/tests
+* Week 3 (10/06): Redesign and construct the prototype code and make it neat and meet our needs(eg. visualization). w/tests
+* Week 4 (10/27): Redesign and construct the prototype code and make it neat and meet our needs(eg. visualization). w/tests
 * Week 5 (11/03): Implement multi-threaded optimizations (parallel preprocessing, divide-and-conquer build)
 * Week 6 (11/10): Implement multi-threaded optimizations (parallel preprocessing, divide-and-conquer build)
 * Week 7 (11/17): Run performance benchmarks; fix edge cases (collinear points, large coordinates); complete `README.md` and API documentation.

@@ -141,14 +141,14 @@ Schedule
 
 Development timeline (8 weeks):
 
-* Week 1: Repository setup, project skeleton (C++ + Python binding structure).
-* Week 2: Implement forward algorithm (C++), unit test with toy HMM.
-* Week 3: Implement backward algorithm (C++), test log-likelihood calculation.
-* Week 4: Implement Baum-Welch training loop (C++), add scaling for underflow.
-* Week 5: Python binding with Pybind11, expose training and parameter retrieval.
-* Week 6: Testing framework (synthetic recovery, monotonic likelihood).
-* Week 7: Add demo examples (weather, finance). Documentation draft.
-* Week 8: Final polishing: functional tests, prepare presentation/demo.
+* Week 1 (10/20): Repository setup, project skeleton (C++ + Python binding structure).
+* Week 2 (10/27): Implement forward algorithm (C++), unit test with toy HMM.
+* Week 3 (11/03): Implement backward algorithm (C++), unit test with log-likelihood calculation.
+* Week 4 (11/10): Implement Baum-Welch training loop (C++), add scaling for underflow. Add basic convergence tests.
+* Week 5 (11/17): Python binding with Pybind11, expose training and parameter retrieval.
+* Week 6 (11/24): Expand testing framework (synthetic recovery, monotonic likelihood). Regression tests.
+* Week 7 (12/01): Add demo examples (weather, finance). Documentation draft.
+* Week 8 (12/08): Final polishing: functional tests, prepare presentation/demo.
 
 References
 ==========

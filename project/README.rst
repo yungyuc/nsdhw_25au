@@ -52,7 +52,9 @@ Follow the format to add your project:
 0. `github_account_name <https://github.com/github_account_name>`__ for
    `Project subject <github_account_name/README.rst>`__:
    https://github.com/github_account_name/project_name
-
+1. `Tsaimingchun14 <https://github.com/Tsaimingchun14>`__ for
+   `hmm-train <https://github.com/Tsaimingchun14/hmm-train/blob/main/README.rst>`__:
+   https://github.com/Tsaimingchun14/hmm-train
 .. note::
 
   Append your project after the first example entry.  Do not delete the example

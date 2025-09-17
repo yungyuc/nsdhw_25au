@@ -1,12 +1,14 @@
 =================
-Voronoi Diagram Toolkit
+fastVoronoi
 =================
 
 Basic Information
 =================
 
+- A high-performance Voronoi diagram toolkit designed for applied spatial
+  analytics and seamless integration into modern GIS workflows(GeoPandas). 
 - **GitHub Repository URL**:
-  https://github.com/ryankert01/voronoi-diagram-toolkit  
+  https://github.com/ryankert01/fastVoronoi
 - The toolkit provides both low-level C++ APIs (for performance) and high-level
   Python APIs (for usability).
 - **A high-performance C++/Python toolkit** for 2D Voronoi diagram construction
@@ -15,35 +17,21 @@ Basic Information
   fewer-point scenarios(fewer than 100 points).
 
 
-Problem to Solve
+Problem to Solve & Prospective Users
 ================
 
-Voronoi diagrams are a fundamental data structure in computational geometry,
-enabling spatial partitioning based on proximity. There're many applications of
-Voronoi diagrams described below.
+This toolkit is designed for `Data Analysts, GIS Professionals`, and Data
+Scientists who need to translate raw location data into actionable spatial
+insights. The ideal user is focused on practical applications, such as defining
+service areas for businesses, analyzing resource allocation for public services,
+or modeling market territories. They require tools that integrate seamlessly
+into existing geospatial workflows, operate within specific geographic
+boundaries (like a city limit), and produce context-rich visualizations for
+immediate interpretation.
 
-Application Scenarios
-  1. **Mesh Generation**: Creating high-quality unstructured meshes for finite
-     element analysis (FEA).  
-  2. **Geographic Information Systems (GIS)**: Partitioning regions based on
-     proximity to landmarks (e.g., service area mapping).  
-  3. **Numerical Simulation**: Defining computational domains for fluid dynamics
-     or heat transfer models.
-
-
-Prospective Users
-=================
-
-The toolkit serves three primary user groups, each with distinct usage patterns:
-  1. **Computational Geometry Developers**: Integrate the C++ core module into
-     high-performance applications (e.g., mesh generators, simulation engines)
-     to leverage efficient diagram construction and querying.
-  2. **Data Analysts & GIS Data Analysis**: Use the Python API or command-line
-     tool to process point data (e.g., GPS coordinates) and generate
-     Voronoi-based partitions, with built-in visualization for quick insights.
-  3. **Students & Researchers**: Experiment with Voronoi diagram properties via
-     the intuitive Python interface, or modify the C++ algorithm core to test
-     custom optimizations.
+The toolkit bridges the gap between high-performance computational geometry and
+applied spatial analytics by speaking the user's language: GeoPandas DataFrames
+and bounded polygons.
 
 
 System Architecture
@@ -51,20 +39,20 @@ System Architecture
 
 Input/Output
 
-- **Input**: 2D point sets in three formats:
+- **Input**: 2D point sets in these formats:
     - TXT file (one point per line: `x y`).
     - Numpy array.
-    - C++ `std::vector` of `Point` structs.
+    - geoPandas dataframe (`gpd.GeoDataFrame`)
 - **Output**:
-    - Structured Voronoi diagram data (JSON file or in-memory objects)
+    - Structured Voronoi diagram data (in-memory objects)
       containing point indices, vertex coordinates, and edge associations.
-    - Matplotlib-generated visualization (points + Voronoi edges).
-    - Nearest neighbor query results (generator point ID for target points).
+    - Matplotlib-generated visualization.
+    - (Optional) Visualize based on a real backgroud map (w/ contextily)
 
 
 Modularization
   The system is divided into two decoupled layers:
-    1. **C++ Core Layer**: Implements Fortune’s algorithm, data structures
+    1. **C++ Core Layer**: Implements Fortune's algorithm, data structures
        (VoronoiCell, Point, Edge), and grid index.
     2. **Python Wrapper Layer**: Uses pybind11 to expose core C++ functionality
        as a Python module.
@@ -72,7 +60,7 @@ Modularization
 
 Constraints
   - Limited to **2D Euclidean space**.
-  - Supports generator point sets of size 1000–10000+ (tested up to 50000
+  - Supports generator point sets of size up to 10000 (tested up to 20000
     points).
   - Does not support weighted or power Voronoi diagrams (focus on standard 2D
     Voronoi).
@@ -85,54 +73,78 @@ High-level Python API description
 
 .. code:: python=
 
-    import numpy as np from voronoi_toolkit import Voronoi
-    
-    # --- Class Definition --- class Voronoi:
-        """A class to compute and interact with a Voronoi diagram."""
-    
-        def __init__(self, points: np.ndarray | list[tuple[float, float]]):
-            """Builds the diagram upon instantiation.""" 
+    # --- Class Definition ---
+    class Voronoi:
+        """A class to compute bounded Voronoi diagrams for geospatial analysis."""
+
+        def __init__(self, 
+                    points: gpd.GeoDataFrame | np.ndarray | list[tuple[float, float]], 
+                    boundary: Polygon | None = None):
+            """
+            Builds the diagram, clipping it to an optional boundary.
+
+            If points is a GeoDataFrame, its 'geometry' column is used.
+            """ 
             # ... implementation ...
-    
-        def find_nearest(self, target_points: np.ndarray | list[tuple[float,float]]) -> np.ndarray:
-            """Finds the nearest generator point index for one or more target
-            points.""" 
+
+        def to_geodataframe(self) -> gpd.GeoDataFrame:
+            """
+            Converts the Voronoi cells into a GeoDataFrame.
+
+            Each row represents a cell, with its geometry and an ID linking
+            back to the original generator point.
+            """
             # ... implementation ...
-    
-        def plot(self, show_points=True, show_edges=True, ax=None):
-            """Visualizes the Voronoi diagram using Matplotlib.""" 
+
+        def plot(self, with_basemap: bool = False, ax=None):
+            """
+            Visualizes the Voronoi diagram, optionally on a map background.
+
+            If with_basemap is True, it overlays the diagram on a tile map
+            (e.g., OpenStreetMap) for spatial context.
+
+            ax: axis to draw graph
+            """ 
             # ... implementation ...
-    
-        @property def cells(self) -> list[dict]:
-            """Returns a list of dictionaries, each describing a Voronoi
-            cell.""" 
+        
+        def find_nearest(self, 
+                        target_points: np.ndarray | list[tuple[float, float]]
+                        ) -> np.ndarray:
+            """
+            Finds the nearest generator point index for one or more target points.
+            """ 
             # ... implementation ...
-    
-        def save_json(self, filepath: str):
-            """Saves the diagram data to a JSON file.""" 
-            # ... implementation ...
-    
-        @staticmethod def from_txt(filepath: str) -> 'Voronoi':
-            """Creates a Voronoi instance from a TXT file.""" 
-            # ... implementation ...
+
 
 Example usage:
 
 .. code:: python=
 
-    import numpy as np import voronoi_toolkit
-    
-    # 1. Build from a NumPy array points = np.random.rand(50, 2) * 100  # 50
-    random points vd = voronoi_toolkit.Voronoi(points)
-    
-    # 2. Find the nearest generator for a set of target points targets =
-    np.array([[25, 25], [50, 50]]) nearest_indices = vd.find_nearest(targets)
-    print(f"Nearest generator indices: {nearest_indices}")
-    
-    # 3. Visualize the diagram vd.plot()
-    
-    # 4. Save the diagram structure to a file
-    vd.save_json("diagram_output.json")
+    import geopandas as gpd
+    from shapely.geometry import Point, Polygon
+    import fastvoronoi
+
+    # 1. Create geospatial data from locations of interest 🗺️
+    stations_data = {
+        'name': ['Station A', 'Station B', 'Station C'],
+        'geometry': [Point(1, 5), Point(3, 1), Point(8, 6)]
+    }
+    stations_gdf = gpd.GeoDataFrame(stations_data, crs="EPSG:4326")
+
+    # 2. Define a city boundary as an Area of Interest (AOI)
+    city_boundary = Polygon([(0, 0), (10, 0), (10, 8), (0, 8)])
+
+    # 3. Build the bounded Voronoi diagram directly from the GeoDataFrame
+    fv = fastvoronoi.Voronoi(stations_gdf, boundary=city_boundary)
+
+    # 4. Visualize with a real map background for immediate context 📍
+    fv.plot(with_basemap=True)
+
+
+    # 5. Get the result as a GeoDataFrame for further spatial analysis
+    # This output is perfect for calculating zone areas or joining with other data.
+    service_areas_gdf = fv.to_geodataframe()
+    print(service_areas_gdf)
 
 
 Engineering Infrastructure
@@ -168,28 +180,27 @@ Engineering Infrastructure
 Schedule
 ========
 
-* Week 1 (09/22): Build a prototype for fortune algorithms. Identify the core
-  algorithms.
-* Week 2 (09/29): Develop C++ testcases for the fortune algorithm code.
-* Week 3 (10/06): Redesign and construct the prototype code and make it neat and
-  meet our needs(eg. visualization). w/tests
-* Week 4 (10/27): Redesign and construct the prototype code and make it neat and
-  meet our needs(eg. visualization). w/tests
-* Week 5 (11/03): Implement multi-threaded optimizations (parallel
-  preprocessing, divide-and-conquer build)
+* Week 1 (09/22): Build a prototype for fortune algorithms and data structures.
+  Identify the core algorithms.
+* Week 2 (09/29): Keep building prototype and develop simple C++ testcases.
+* Week 3 (10/06): Redesign and construct the prototyped code(algorithm and data
+  structures) and make it neat. w/tests
+* Week 4 (10/27): Redesign and construct the prototyped code(algorithm and data
+  structures) and make it neat. w/tests
+* Week 5 (11/03): Implement visualizations
 * Week 6 (11/10): Implement multi-threaded optimizations (parallel
   preprocessing, divide-and-conquer build)
-* Week 7 (11/17): Run performance benchmarks; fix edge cases (collinear points,
-  large coordinates); complete `README.md` and API documentation.
-* Week 8 (11/24): Flextime, Integrate all modules; run end-to-end tests; tag
-  v1.0 release on GitHub.
+* Week 7 (11/17): Implement multi-threaded optimizations (parallel
+  preprocessing, divide-and-conquer build)
+* Week 8 (11/24): Run performance benchmarks; fix edge cases (collinear points,
+  large coordinates); complete `README.md` and API documentation. Tag 1.0
+  release on Github.
 
 
 
 References
 ==========
 
-1. Fortune, S. (1987). A sweepline algorithm for Voronoi diagrams.
-   *Algorithmica*, 2(1-4), 153–174.
+1. Fortune, S. (1986). A sweepline algorithm for Voronoi diagrams. https://doi.org/10.1145/10515.1054
 2. pybind11 Documentation. https://pybind11.readthedocs.io/en/stable/
 3. CMake Documentation. https://cmake.org/cmake/help/latest/

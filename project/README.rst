@@ -1,60 +1,56 @@
+Project Proposal
 ================
-NSD Term Project
-================
 
-This is the directory for the term project proposal.  To turn it in, you need
-**a PR** and **an E3 entry for the PR URL**.  See
-https://yyc.solvcon.net/en/latest/nsd/schedule/25au_nycu/schedule25au.html for
-what should be included in the proposal and project.
+Topic
+-----
+A lightweight library for Fourier Transform on small-scale signals.
 
-The proposal accounts for 8 points out of the 40 points allocated to the term
-project.  Like homework, you will need to create a PR against the ``project``
-branch (not ``master``).  You need to create a sub-directory using exactly your
-GitHub username as your working directory (``nsdhw_25au/project/$username/``).
-The hierarchy should be like::
+Motivation / Problem to Solve
+-----------------------------
+Fourier Transform is a fundamental tool in signal processing, image analysis, 
+and many scientific applications. While powerful libraries such as NumPy and FFTW 
+already exist, they are either too heavy for small-scale educational purposes 
+or lack simple, minimal examples that can be directly reused in teaching or small projects.  
 
-  - nsdhw_25au (<- repository root)
-    - project
-      - username (<- your working directory)
-        - README.rst (<- the main proposal file)
-        - ... other files for your proposal
+The problem to solve is:  
+**“There is no lightweight and easy-to-use library that demonstrates Fourier Transform 
+for small-scale signals with simple APIs and automated testing.”**
 
-**ATTENTION**: Your PR should include an entry in "Project List by Account
-Name" in this file.
+Goals / Deliverables
+--------------------
+1. **Basic Goals**
+   - Implement 1D Discrete Fourier Transform (DFT).
+   - Implement 1D Inverse DFT.
+   - Provide simple APIs for input and output of signal arrays.
+   - Validate correctness with unit tests.
 
-When submitting your proposal, name the PR as ``<username>-proposal**``, e.g.,
-``yungyuc-proposal-submission``.  Don't forget to put the PR URL in the E3
-entry too.  You can request my review in the PR.
+2. **Extended Goals (if time allows)**
+   - Implement 2D Fourier Transform (for images).
+   - Compare performance with NumPy FFT.
+   - Add visualization utilities for frequency spectra.
+   - Provide real-world usage examples (e.g., simple signal filtering).
 
-Presentation
-============
+Technical Approach
+------------------
+- **Programming Language**: Python (for easier math prototyping).  
+- **Testing**: pytest for unit tests.  
+- **CI/CD**: GitHub Actions for continuous integration and automated testing.  
+- **Documentation**: Usage examples with plots (Matplotlib).  
+- **Version Control**: GitHub Pull Request workflow.  
 
-..
-  The presentation schedule is set.  If you want to change the time, ask for the
-  owner of the other time slot and file a PR tagging him or her and the
-  instructor (@yungyuc) against the branch `master`.  Everyone involved needs to
-  add a global comment to agree the exchange in the PR.  The PR subject line
-  should start with ``[presentation]``.
+Schedule
+--------
+- Week 3–4: Survey existing FFT libraries and confirm project scope.  
+- Week 5–7: Implement 1D DFT and Inverse DFT.  
+- Week 8–9: Write unit tests and set up CI/CD pipeline.  
+- Week 10–12: Extend to 2D Fourier Transform and visualization utilities.  
+- Week 13–14: Benchmark against NumPy FFT and optimize code.  
+- Week 15–16: Finalize documentation and usage examples.  
+- Week 17–18: Prepare final report and presentation.  
 
-  Each presenter has at most 15 minutes including setup.  A common arrangement is
-  to present for 12 minutes and use 3 minutes for questions and discussions.
-
-  Presenters should prepare the computer.  It is OK to share.  If presenters have
-  difficulty in preparing a computer, they need to seek help and resolve the
-  issue one week (168 hours) before the presentation.
-
-Projects by Account Names
-+++++++++++++++++++++++++
-
-
-Follow the format to add your project:
-
-0. `github_account_name <https://github.com/github_account_name>`__ for
-   `Project subject <github_account_name/README.rst>`__:
-   https://github.com/github_account_name/project_name
-
-.. note::
-
-  Append your project after the first example entry.  Do not delete the example
-  entry.
-
+References
+----------
+- Cooley–Tukey FFT Algorithm: https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm  
+- NumPy FFT Module: https://numpy.org/doc/stable/reference/routines.fft.html  
+- FFTW Library: http://www.fftw.org  
+- GitHub Actions Documentation: https://docs.github.com/en/actions

@@ -14,11 +14,7 @@ Basic Information
 Problem to Solve
 ================
 
-Voronoi diagrams are a fundamental data structure in computational geometry, enabling spatial partitioning based on proximity to discrete "generator points." However, existing solutions face gaps in balancing **efficiency**, **usability**, and **engineering robustness**:
-
-- Open-source implementations often lack standardized APIs or require deep algorithmic expertise to integrate.
-- Naive Voronoi construction (e.g., brute-force) is inefficient for large point sets (10000+ points), limiting real-world applicability.
-- Few tools combine core algorithm implementation with end-to-end workflows (input → build → query → visualize).
+Voronoi diagrams are a fundamental data structure in computational geometry, enabling spatial partitioning based on proximity. There're many applications of Voronoi diagrams described below.
 
 Application Scenarios
   1. **Mesh Generation**: Creating high-quality unstructured meshes for finite element analysis (FEA).  

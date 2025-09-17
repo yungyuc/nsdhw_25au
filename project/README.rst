@@ -61,6 +61,9 @@ Follow the format to add your project:
 3. `wei0107 <https://github.com/wei0107>`__ for
    `pixfoundry <https://github.com/wei0107/PixFoundry/blob/main/README.rst>`__:
    https://github.com/wei0107/PixFoundry
+4. `ryankert01 <https://github.com/ryankert01>`__ for
+   `Voronoi Diagram Toolkit <ryankert01/README.rst>`__:
+   https://github.com/ryankert01/voronoi-diagram-toolkit
 
 .. note::
 

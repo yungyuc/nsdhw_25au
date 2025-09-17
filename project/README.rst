@@ -58,6 +58,9 @@ Follow the format to add your project:
 2. `Linkenreefefedas <https://github.com/Linkenreefefedas>`__ for
    `CNDA <https://github.com/Linkenreefefedas/CNDA/blob/main/README.rst>`__:
    https://github.com/Linkenreefefedas/CNDA
+3. `wei0107 <https://github.com/wei0107>`__ for
+   `pixfoundry <https://github.com/wei0107/PixFoundry/blob/main/README.rst>`__:
+   https://github.com/wei0107/PixFoundry
 
 .. note::
 

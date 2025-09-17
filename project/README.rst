@@ -55,6 +55,10 @@ Follow the format to add your project:
 1. `Tsaimingchun14 <https://github.com/Tsaimingchun14>`__ for
    `hmm-train <https://github.com/Tsaimingchun14/hmm-train/blob/main/README.rst>`__:
    https://github.com/Tsaimingchun14/hmm-train
+2. `Linkenreefefedas <https://github.com/Linkenreefefedas>`__ for
+   `CNDA <https://github.com/Linkenreefefedas/CNDA/blob/main/README.rst>`__:
+   https://github.com/Linkenreefefedas/CNDA
+
 .. note::
 
   Append your project after the first example entry.  Do not delete the example

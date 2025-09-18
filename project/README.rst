@@ -52,6 +52,14 @@ Follow the format to add your project:
 0. `github_account_name <https://github.com/github_account_name>`__ for
    `Project subject <github_account_name/README.rst>`__:
    https://github.com/github_account_name/project_name
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0f28fee (add entry)
+=======
+>>>>>>> 3502f84 (add entry)
 1. `Tsaimingchun14 <https://github.com/Tsaimingchun14>`__ for
    `hmm-train <https://github.com/Tsaimingchun14/hmm-train/blob/main/README.rst>`__:
    https://github.com/Tsaimingchun14/hmm-train
@@ -72,6 +80,12 @@ Follow the format to add your project:
 7. `Duck997 <https://github.com/Duck997>`__ for
    `VLSIGR <Duck997/README.rst>`__:
    https://github.com/Duck997/VLSIGR
+8. `Allenwang2004 <https://github.com/Allenwang2004>`__ for
+   `consensus-admm <https://github.com/Allenwang2004/consensus-admm/blob/main/README.rst>`__:
+   https://github.com/Allenwang2004/consensus-admm
+
+
+>>>>>>> 49aaaf4 (rebase)
 
 .. note::
 

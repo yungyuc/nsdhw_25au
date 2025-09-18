@@ -5,7 +5,7 @@ Topic
 -----
 A lightweight library for Fourier Transform on small-scale signals.
 
-Motivation / Problem to Solve
+Problem to Solve
 -----------------------------
 Fourier Transform is a fundamental tool in signal processing, image analysis, 
 and many scientific applications. While powerful libraries such as NumPy and FFTW 
@@ -16,7 +16,7 @@ The problem to solve is:
 **“There is no lightweight and easy-to-use library that demonstrates Fourier Transform 
 for small-scale signals with simple APIs and automated testing.”**
 
-Goals / Deliverables
+Goals
 --------------------
 1. **Basic Goals**
    - Implement 1D Discrete Fourier Transform (DFT).
@@ -41,12 +41,12 @@ Technical Approach
 Schedule
 --------
 - Week 3–4: Survey existing FFT libraries and confirm project scope.  
-- Week 5–7: Implement 1D DFT and Inverse DFT.  
-- Week 8–9: Write unit tests and set up CI/CD pipeline.  
-- Week 10–12: Extend to 2D Fourier Transform and visualization utilities.  
-- Week 13–14: Benchmark against NumPy FFT and optimize code.  
-- Week 15–16: Finalize documentation and usage examples.  
-- Week 17–18: Prepare final report and presentation.  
+- Week 5–6: Implement 1D DFT and Inverse DFT.  
+- Week 7: Write unit tests and set up CI/CD pipeline.  
+- Week 8–9: Extend to 2D Fourier Transform and visualization utilities.  
+- Week 10–11: Benchmark against NumPy FFT and optimize code.  
+- Week 12: Finalize documentation and usage examples.  
+- Week 13–14: Prepare final report and presentation.  
 
 References
 ----------

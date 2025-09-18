@@ -63,13 +63,13 @@ System Architecture
 
 **Workflow:**
 
-1. **Input Processing:** Accept BAM files or count matrices
+1. **Input:** Accept BAM files or count matrices (~100K genes x 3-6 samples)
 2. **Normalization:** Calculate size factors to adjust for sequencing depth
 3. **Dispersion Estimation:** Estimate gene-specific dispersion parameters
 4. **GLM Fitting:** Use IRLS to estimate regression coefficients
 5. **Statistical Testing:** Apply Wald test for differential expression
 6. **Multiple Testing Correction:** Benjamini-Hochberg FDR correction
-7. **Output Generation:** Generate results table with statistics
+7. **Output:** Generate results table with statistics
 
 API Description
 ===============
@@ -139,14 +139,21 @@ Schedule
 Development timeline (10 weeks):
 
 * Week 01 (09/22): Repository setup, literature review, finalize proposal
-* Week 02 (09/29): Implement data input and preprocessing modules
-* Week 03 (10/06): Develop size factor calculation
-* Week 04 (10/13): Implement dispersion estimation algorithms
-* Week 05 (10/20): Build GLM fitting module with IRLS implementation
-* Week 06 (10/27): Add statistical testing (Wald test) and correction
-* Week 07 (11/03): Create Python bindings and API interface
-* Week 08 (11/10): Testing, documentation, and performance optimization
-* Week 09 (11/17): Benchmarking against DESeq2, final debugging
+* Week 02 (09/29): Create Python bindings structure, implement data input and 
+  preprocessing modules
+* Week 03 (10/06): Develop size factor calculation, unit test with synthetic
+  count matrix
+* Week 04 (10/13): Implement dispersion estimation algorithms, test mean
+  variance fitting convergence
+* Week 05 (10/20): Build GLM fitting module with IRLS implementation, test
+  coefficient convergence
+* Week 06 (10/27): Add statistical testing (Wald test) and correction, unit
+  test p-value calculations
+* Week 07 (11/03): Complete API interface, comprehensive end-to-end pipeline
+  testing
+* Week 08 (11/10): Validation testing against DESeq2 output comparison,
+  performance benchmarking, documentation
+* Week 09 (11/17): Final debugging
 * Week 10 (11/24): Project presentation preparation
 
 References

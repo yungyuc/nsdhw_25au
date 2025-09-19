@@ -13,7 +13,7 @@ $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) $(PYBIND11_FLAGS) $(PYTHON_INCLUDES) $(SRC) -o $@ $(PYTHON_LIB)
 
 test: $(TARGET)
-	env PYTHONPATH=. pytest -v
+	env PYTHONPATH=. python3 -m pytest -v
 
 clean:
 	rm -f $(TARGET) *.o

@@ -66,6 +66,9 @@ Follow the format to add your project:
    https://github.com/ryankert01/voronoi-diagram-toolkit
 5. `lnfu <https://github.com/lnfu>`__ for
    `DEATH: Differential Expression Analysis Tool for High-throughput NGS <lnfu/README.rst>`__: https://github.com/lnfu/death
+4. `heyvrann <https://github.com/heyvrann>`__ for
+   `R-tree Search Engine <heyvrann/README.rst>`__:
+   https://github.com/heyvrann/RTSE
 
 .. note::
 

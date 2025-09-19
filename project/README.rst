@@ -4,11 +4,12 @@ AgAMGPCG: Aggregation-based Algebraic Multigrid Preconditioned Conjugate Gradien
 
 Basic Information
 ========
-- GitHub Repository URL: 
+
+**Repository:** https://github.com/3829penguin/AgAMG
   
 Problem to Solve 
 ==========
-- In advanced process nodes and 2.5D/3D stacked packaging, 
+In advanced process nodes and 2.5D/3D stacked packaging, 
 the high power density leads to significant local hotspots and complex inter-layer heat transfer behavior, 
 which must be captured using high-resolution FDM models.
 However, FDM generates a large number of grids, 
@@ -19,14 +20,14 @@ Therefore, we employ aggregation-based AMG as a preconditioner for CG to improve
 Prospective Users
 ============
 
--
+Chip and system designers, who require accurate and efficient thermal verification during both early design and sign-off stages.
 
 System Architecture
 ===================
 1.Input: Sparse matrix in CSR format :math:`A`, right-hand side vector :math:`b`, threshold :math:`n`.
 2.Output: Approximate solution vector :math:`x`.
 3.Constraints: The matrix :math:`A` should be M-matrix.
-- M-matrix is a matrix whose off-diagonal entries are less than or equal to zero and whose eigenvalues have nonnegative real parts. 
+M-matrix is a matrix whose off-diagonal entries are less than or equal to zero and whose eigenvalues have nonnegative real parts. 
 
 API Description
 ===============

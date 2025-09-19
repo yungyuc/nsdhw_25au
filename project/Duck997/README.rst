@@ -199,7 +199,7 @@ Engineering Infrastructure
 Schedule
 ========
 
-8-week development plan from 10/13 to 12/7, 2024.
+8-week development plan from 10/13 to 12/7, 2025.
 
 The timeline begins with foundation work including ISPD benchmark analysis and core routing algorithm implementation, followed by advanced scoring systems and HUM optimization development. The middle phase focuses on performance optimization and comprehensive ISPD benchmark validation, while the final weeks concentrate on API development, documentation, and visualization tools.
 

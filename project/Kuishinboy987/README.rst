@@ -122,4 +122,4 @@ References
 
 1. R-tree wiki: https://en.wikipedia.org/wiki/R-tree
 
-2. Py
+2. Pybind11 documentation: https://pybind11.readthedocs.io

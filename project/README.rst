@@ -1,60 +1,69 @@
-================
-NSD Term Project
-================
+===============================
+AgAMGPCG: Aggregation-based Algebraic Multigrid Preconditioned Conjugate Gradient Method
+===============================
 
-This is the directory for the term project proposal.  To turn it in, you need
-**a PR** and **an E3 entry for the PR URL**.  See
-https://yyc.solvcon.net/en/latest/nsd/schedule/25au_nycu/schedule25au.html for
-what should be included in the proposal and project.
+Basic Information
+========
 
-The proposal accounts for 8 points out of the 40 points allocated to the term
-project.  Like homework, you will need to create a PR against the ``project``
-branch (not ``master``).  You need to create a sub-directory using exactly your
-GitHub username as your working directory (``nsdhw_25au/project/$username/``).
-The hierarchy should be like::
+**Repository:** https://github.com/3829penguin/AgAMG
+  
+Problem to Solve 
+==========
+In advanced process nodes and 2.5D/3D stacked packaging, 
+the high power density leads to significant local hotspots and complex inter-layer heat transfer behavior, 
+which must be captured using high-resolution FDM models.
+However, FDM generates a large number of grids, 
+resulting in extremely large linear systems. Traditional solvers such as CG require prohibitively long runtimes, 
+and CG often exhibits poor convergence on large-scale systems.
+Therefore, we employ aggregation-based AMG as a preconditioner for CG to improve convergence speed.
 
-  - nsdhw_25au (<- repository root)
-    - project
-      - username (<- your working directory)
-        - README.rst (<- the main proposal file)
-        - ... other files for your proposal
-
-**ATTENTION**: Your PR should include an entry in "Project List by Account
-Name" in this file.
-
-When submitting your proposal, name the PR as ``<username>-proposal**``, e.g.,
-``yungyuc-proposal-submission``.  Don't forget to put the PR URL in the E3
-entry too.  You can request my review in the PR.
-
-Presentation
+Prospective Users
 ============
 
-..
-  The presentation schedule is set.  If you want to change the time, ask for the
-  owner of the other time slot and file a PR tagging him or her and the
-  instructor (@yungyuc) against the branch `master`.  Everyone involved needs to
-  add a global comment to agree the exchange in the PR.  The PR subject line
-  should start with ``[presentation]``.
+Chip and system designers, who require accurate and efficient thermal verification during both early design and sign-off stages.
 
-  Each presenter has at most 15 minutes including setup.  A common arrangement is
-  to present for 12 minutes and use 3 minutes for questions and discussions.
+System Architecture
+===================
+1.Input: Sparse matrix in CSR format :math:`A`, right-hand side vector :math:`b`, threshold :math:`n`.
+2.Output: Approximate solution vector :math:`x`.
+3.Constraints: The matrix :math:`A` should be M-matrix.
+M-matrix is a matrix whose off-diagonal entries are less than or equal to zero and whose eigenvalues have nonnegative real parts. 
 
-  Presenters should prepare the computer.  It is OK to share.  If presenters have
-  difficulty in preparing a computer, they need to seek help and resolve the
-  issue one week (168 hours) before the presentation.
+API Description
+===============
 
-Projects by Account Names
-+++++++++++++++++++++++++
+Function:
+.. code-block:: c++
+    vector<double>& AgAMG(CSR A, vector<double>& b);
+Example Usage:
+.. code-block:: c++
+    #include <vector>
+    #include <iostream>
+    #include <AgAMGPCG.h>
+    int main() {
+        //Parsing CSR and b
+        CSR A;
+        vector<double> b;
+        vector<double> x;
+        x =  AgAMG(A, b);
+        return 0;
+    }
+Engineering Infrastructure
+==========================
+1. Build system: CMake
+2. Version control: GitHub
+3. Testing framework: C++: Google Test
+4. Documentation: README.rst
 
-
-Follow the format to add your project:
-
-0. `github_account_name <https://github.com/github_account_name>`__ for
-   `Project subject <github_account_name/README.rst>`__:
-   https://github.com/github_account_name/project_name
-
-.. note::
-
-  Append your project after the first example entry.  Do not delete the example
-  entry.
-
+Schedule
+========
+* Week 1 (10/20): Implement Parser to read sparse matrix in CSR format from file.
+* Week 2 (10/27): Implement Aggregate algorithm.
+* Week 3 (11/03): Implement AMG algorithm.
+* Week 4 (11/10): Implement CG algorithm.
+* Week 5 (11/17): Parallel acceleration.
+* Week 6 (11/24): Complete API interface.
+* Week 7 (12/01): Final Validation of code.
+* Week 8 (12/08): Complete the final polishing by conducting functional tests, preparing the presentation and demo, and compiling the references.
+==========
+1. Notay, Yvan. "An aggregation-based algebraic multigrid method." Electron. Trans. Numer. Anal 37.6 (2010): 123-146.

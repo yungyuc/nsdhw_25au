@@ -66,9 +66,12 @@ Follow the format to add your project:
    https://github.com/ryankert01/voronoi-diagram-toolkit
 5. `lnfu <https://github.com/lnfu>`__ for
    `DEATH: Differential Expression Analysis Tool for High-throughput NGS <lnfu/README.rst>`__: https://github.com/lnfu/death
-6. `Duck997 <https://github.com/Duck997>`__ for
-   `High-Performance VLSI Global Router with Adaptive Algorithm Design <Duck997/README.rst>`__:
-   https://github.com/Duck997/VLSI-Global-Router
+6. `heyvrann <https://github.com/heyvrann>`__ for
+   `R-tree Search Engine <heyvrann/README.rst>`__:
+   https://github.com/heyvrann/RTSE
+7. `Duck997 <https://github.com/Duck997>`__ for
+   `VLSIGR <Duck997/README.rst>`__:
+   https://github.com/Duck997/VLSIGR
 
 .. note::
 

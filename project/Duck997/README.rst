@@ -34,10 +34,13 @@ the design flow, directly impacting time-to-market and design quality.
 
 **Physics and Mathematics**
 The routing problem involves:
-- **Graph Theory**: Representing the routing grid as a graph with capacity constraints
-- **Optimization Theory**: Minimizing wirelength while satisfying capacity constraints
+- **Graph Theory**: Representing the routing grid as a graph with capacity
+  constraints
+- **Optimization Theory**: Minimizing wirelength while satisfying capacity
+  constraints
 - **Dynamic Programming**: Implementing efficient path-finding algorithms
-- **Adaptive Algorithms**: Dynamic parameter adjustment based on routing context
+- **Adaptive Algorithms**: Dynamic parameter adjustment based on routing
+  context
 
 
 Prospective Users
@@ -96,7 +99,8 @@ System Architecture
      - Prioritizes difficult networks for early processing
      - Balances overflow resolution with wirelength optimization
    
-   - **Two-pin Score Function**: Adaptive scoring with multiple modes for different routing phases
+   - **Two-pin Score Function**: Adaptive scoring with multiple modes for
+     different routing phases
    
    - **Edge Cost Calculation**: Dynamic cost evaluation with history-based
      penalty
@@ -292,12 +296,14 @@ critical for VLSI routing systems.
     *   User documentation writing, code comments and high-level documentation
 *   **Week 8 (12/01 - 12/07): Visualization & Finalization**
     *   Visualization tools development and integration
-    *   Final testing and validation, project completion and presentation preparation
+    *   Final testing and validation, project completion and presentation
+      preparation
 
 References
 ==========
 
-1. ISPD 2008 Global Routing Contest. https://www.ispd.cc/contests/08/ispd08rc.html
+1. ISPD 2008 Global Routing Contest.
+   https://www.ispd.cc/contests/08/ispd08rc.html
 2. W.-H. Liu, Y.-L. Li, and C.-K. Koh. "A fast maze-free routing congestion
    estimator with hybrid unilateral monotonic routing." 2012 IEEE/ACM
    International Conference on Computer-Aided Design (ICCAD), San Jose, CA,

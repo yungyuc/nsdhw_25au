@@ -1,11 +1,11 @@
 ================
-VLSI Global Router
+VLSIGR
 ================
 
 Basic Information
 =================
 
-**GitHub Repository**: https://github.com/Duck997/VLSI-Router
+**GitHub Repository**: https://github.com/Duck997/VLSIGR
 
 **Project Description**: A high-performance VLSI global router
 implementation that incorporates adaptive algorithms and intelligent
@@ -146,18 +146,18 @@ API Description
 
 .. code-block:: cpp
 
-   #include "vlsi_router.hpp"  // Main router interface with ISPD parser
+   #include "vlsigr.hpp"  // Main router interface with ISPD parser
    // and visualization
    
    // Load ISPD benchmark file
    ISPDParser::ispdData* data = ISPDParser::parse_file("adaptec1.gr");
    
    // Initialize router with ISPD benchmark data
-   VLSIRouter::GlobalRouting router;
+   VLSIGR::GlobalRouting router;
    router.init(*data);
    
    // Configure optimization parameters
-   router.setMode(VLSIRouter::Mode::BALANCED);  // Use balanced mode
+   router.setMode(VLSIGR::Mode::BALANCED);  // Use balanced mode
    router.enableAdaptiveScoring(true);
    router.enableHUMOptimization(true);
    
@@ -169,7 +169,7 @@ API Description
    auto metrics = router.getPerformanceMetrics();
    
    // Generate visualization
-   VLSIRouter::Visualization viz;
+   VLSIGR::Visualization viz;
    viz.generateMap(data, results, "routing_result.ppm");
    
    // Clean up resources
@@ -180,11 +180,11 @@ API Description
 
 .. code-block:: python
 
-   import vlsi_router
-   from vlsi_router import Mode
+   import vlsigr
+   from vlsigr import Mode
    
    # Create router instance
-   router = vlsi_router.GlobalRouter()
+   router = vlsigr.GlobalRouter()
    
    # Load ISPD benchmark file
    router.load_ispd_benchmark("adaptec1.gr")

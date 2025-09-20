@@ -226,20 +226,14 @@ Engineering Infrastructure
    (LayerAssignment Module) are used under their respective academic
    research licenses.
 
-3. Testing Contents
+3. Testing Framework
 
-   - **ISPD Benchmark Validation**: Test routing quality and performance
-     using ISPD 2008 benchmarks:
-     - **Routing Quality Tests**: Validate overflow resolution and
-       wirelength optimization against benchmark standards.
-     - **Algorithm Correctness Tests**: Verify HUM optimization, adaptive
-       scoring, and expansion strategies.
-     - **Performance Benchmarking**: Measure execution time and
-       convergence for various benchmark sizes.
-   - **Visualization Testing**: Validate PPM output generation and
-     congestion map accuracy.
-   - **Cross-platform Testing**: Ensure compatibility across different
-     server environments and compiler versions.
+   - **Contest Benchmark Testing**: Validate routing quality and performance
+     using ISPD contest benchmarks.
+   - **Algorithm Verification**: Test HUM optimization and adaptive scoring
+     strategies.
+   - **Cross-platform Compatibility**: Ensure compatibility across different
+     environments.
 
 4. Documentation
 

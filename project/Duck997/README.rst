@@ -232,7 +232,7 @@ Engineering Infrastructure
 
 3. Testing Framework
 
-   Testing: Catch2 (for C++), pytest (for Python).
+   ``Catch2`` or ``GoogleTest`` (for C++), ``pytest`` (for Python).
 
 4. Documentation
 
@@ -297,18 +297,22 @@ critical for VLSI routing systems.
 References
 ==========
 
-1. ISPD 2008 Global Routing Contest.
+.. [1] ISPD 2008 Global Routing Contest.
    https://www.ispd.cc/contests/08/ispd08rc.html
-2. W.-H. Liu, Y.-L. Li, and C.-K. Koh. "A fast maze-free routing congestion
+
+.. [2] W.-H. Liu, Y.-L. Li, and C.-K. Koh. "A fast maze-free routing congestion
    estimator with hybrid unilateral monotonic routing." 2012 IEEE/ACM
    International Conference on Computer-Aided Design (ICCAD), San Jose, CA,
    USA, 2012, pp. 713-719.
-3. W.-H. Liu, W.-C. Kao, Y.-L. Li, and K.-Y. Chao. "NCTU-GR 2.0: Multithreaded
+
+.. [3] W.-H. Liu, W.-C. Kao, Y.-L. Li, and K.-Y. Chao. "NCTU-GR 2.0: Multithreaded
    Collision-Aware Global Routing With Bounded-Length Maze Routing." IEEE
    Transactions on Computer-Aided Design of Integrated Circuits and Systems,
    vol. 32, no. 5, pp. 709-722, May 2013. DOI: 10.1109/TCAD.2012.2235124
-4. VLSI Physical Design Automation: Theory and Practice. Sait, Sadiq M., and
+
+.. [4] VLSI Physical Design Automation: Theory and Practice. Sait, Sadiq M., and
    Youssef, Habib.
-5. Global Routing in VLSI Design. Cong, Jason, and Shinnerl, Joseph R.
+
+.. [5] Global Routing in VLSI Design. Cong, Jason, and Shinnerl, Joseph R.
 
 

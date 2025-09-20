@@ -232,12 +232,7 @@ Engineering Infrastructure
 
 3. Testing Framework
 
-   - **Contest Benchmark Testing**: Validate routing quality and performance
-     using ISPD contest benchmarks.
-   - **Algorithm Verification**: Test HUM optimization and adaptive scoring
-     strategies.
-   - **Cross-platform Compatibility**: Ensure compatibility across different
-     environments.
+   Testing: Catch2 (for C++), pytest (for Python).
 
 4. Documentation
 

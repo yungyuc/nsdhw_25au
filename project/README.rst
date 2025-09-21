@@ -69,6 +69,9 @@ Follow the format to add your project:
 6. `heyvrann <https://github.com/heyvrann>`__ for
    `R-tree Search Engine <heyvrann/README.rst>`__:
    https://github.com/heyvrann/RTSE
+7. `Duck997 <https://github.com/Duck997>`__ for
+   `VLSIGR <Duck997/README.rst>`__:
+   https://github.com/Duck997/VLSIGR
 
 .. note::
 

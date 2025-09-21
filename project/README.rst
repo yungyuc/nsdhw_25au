@@ -21,7 +21,7 @@ The hierarchy should be like::
 
 **ATTENTION**: Your PR should include an entry in "Project List by Account
 Name" in this file.
-
+- hikaru-shih: A lightweight library for Fourier Transform on small-scale signals
 When submitting your proposal, name the PR as ``<username>-proposal**``, e.g.,
 ``yungyuc-proposal-submission``.  Don't forget to put the PR URL in the E3
 entry too.  You can request my review in the PR.

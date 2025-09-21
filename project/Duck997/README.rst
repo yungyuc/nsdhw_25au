@@ -32,7 +32,7 @@ continue to scale with billions of transistors. The computational
 complexity of routing algorithms has become a significant bottleneck in
 the design flow, directly impacting time-to-market and design quality.
 
-**Physics and Mathematics**
+**Mathematical Foundations**
 The routing problem involves:
 - **Graph Theory**: Representing the routing grid as a graph with capacity
   constraints

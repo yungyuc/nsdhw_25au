@@ -1,6 +1,6 @@
 import math
 import pytest
-import vecgeom
+import _vector as vecgeom
 
 def test_right_angle():
     # (1,0) 與 (0,1) -> 90 度 = pi/2

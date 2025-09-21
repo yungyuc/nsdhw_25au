@@ -3,7 +3,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(vecgeom, m) {
+PYBIND11_MODULE(_vector, m) {
     m.doc() = "2D vector angle utilities";
     m.def("angle_between",
           [](double ax, double ay, double bx, double by) {

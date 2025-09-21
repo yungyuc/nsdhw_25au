@@ -10,7 +10,7 @@ PY_CFLAGS := -I$(PY_INC)
 # pybind11 includes
 PYBIND11_INC := $(shell $(PYTHON) -m pybind11 --includes)
 
-MODULE := vecgeom$(PY_EXT)
+MODULE := _vector$(PY_EXT)
 OBJS := pybind_module.o
 
 .PHONY: all test clean

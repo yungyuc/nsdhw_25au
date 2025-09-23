@@ -1,16 +1,17 @@
 CXX = g++
-CXXFLAGS = -O3 -Wall -shared -std=c++17 -fPIC $(shell python3 -m pybind11 --includes)
-LDFLAGS = $(shell python3-config --ldflags)
-TARGET = vector_angle$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
-SRCS = angle.cpp bind.cpp
+CXXFLAGS = -std=c++14 -Wall -Wextra -O2 -shared -fPIC
+PYBIND11_FLAGS = $(shell python3 -m pybind11 --includes)
 
-all: $(TARGET)
+SRC = angle.cpp bind.cpp
+TARGET = _vector.so
 
-$(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) $(SRCS) -o $(TARGET) $(LDFLAGS)
+$(TARGET): $(SRC)
+	$(CXX) $(CXXFLAGS) $(PYBIND11_FLAGS) $^ -o $@
 
 test: $(TARGET)
-	pytest -q
+	python3 -m pytest -v test_angle.py
 
 clean:
 	rm -f $(TARGET) *.o
+
+.PHONY: test clean

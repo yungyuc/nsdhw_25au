@@ -19,4 +19,5 @@ test: $(TARGET)
 
 clean:
 	rm -f $(TARGET) *.o
+	rm -f _vector*.so
 	rm -rf __pycache__ .pytest_cache

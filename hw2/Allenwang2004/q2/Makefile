@@ -19,7 +19,7 @@ build:
 
 # Run tests using pytest
 test: build
-	$(PYTHON) -m pytest test.py -v
+	$(PYTHON) -m pytest test_vector.py
 
 # Clean all generated files
 clean:

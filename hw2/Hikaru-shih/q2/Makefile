@@ -1,12 +1,14 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -Wall -Wextra -O2 -shared -fPIC
-PYBIND11_FLAGS = $(shell python3 -m pybind11 --includes)
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -shared -fPIC
+PYINCLUDES := $(shell python3 -m pybind11 --includes 2>/dev/null || python3-config --includes)
+PYLDFLAGS := $(shell python3-config --ldflags)
+TARGET := _vector$(shell python3-config --extension-suffix)
+SRC := angle.cpp bind.cpp
 
-SRC = angle.cpp bind.cpp
-TARGET = _vector.so
+all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(PYBIND11_FLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(PYINCLUDES) $(SRC) -o $@ $(PYLDFLAGS)
 
 test: $(TARGET)
 	python3 -m pytest -v test_angle.py
@@ -14,4 +16,4 @@ test: $(TARGET)
 clean:
 	rm -f $(TARGET) *.o
 
-.PHONY: test clean
+.PHONY: all test clean

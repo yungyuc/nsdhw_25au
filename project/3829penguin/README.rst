@@ -1,10 +1,10 @@
-JacobiPCG: Jacobi Preconditioned Conjugate Gradient Method
+Preconditioned Conjugate Gradient Method
 =========================================================
 
 Basic Information
 =================
 
-**Repository:** `https://github.com/3829penguin/JacobiPCG <https://github.com/3829penguin/JacobiPCG>`_
+**Repository:** `https://github.com/3829penguin/PCG <https://github.com/3829penguin/PCG>`_
 
 Problem Statement
 =================
@@ -19,8 +19,8 @@ linear equations. Classical iterative solvers such as Conjugate Gradient (CG)
 suffer from long runtimes and slow convergence, especially on ill-conditioned 
 systems.
 
-To address this challenge, we implement the **Jacobi Preconditioned Conjugate 
-Gradient (JacobiPCG)** method, which applies Jacobi preconditioning to CG, 
+To address this challenge, we implement the **Preconditioned Conjugate 
+Gradient (PCG)** method, which applies some method of preconditioning to CG, 
 significantly accelerating convergence and reducing computational cost.
 
 Target Users
@@ -29,7 +29,7 @@ Target Users
 Chip and system designers who require accurate and efficient thermal verification 
 during both early design exploration and sign-off analysis.They need to solve large sparse 
 linear systems efficiently to ensure thermal reliability in advanced integrated
-packages.JacobiPCG provides a robust and efficient solution for these users.
+packages.PCG provides a robust and efficient solution for these users.
 
 System Overview
 ===============
@@ -43,11 +43,26 @@ I aim to solve sparse linear systems with matrix sizes in the range of 10^5*10^5
 API Description
 ===============
 
-**Function Signature:**
+**Preconditioner Options:**
 
 .. code-block:: c++
 
-    vector<double>& JacobiPCG(CSR A, vector<double>& b);
+    enum class PreconditionerType {
+        Jacobi,
+        GaussSeidel
+        //others maybe
+    };
+
+**Unified Function Signature:**
+
+.. code-block:: c++
+
+    vector<double>& PCG_Solver(
+        CSR A, 
+        vector<double>& b, 
+        PreconditionerType preconditioner = PreconditionerType::Jacobi,
+        int max_iter = 1000, 
+        double tol = 1e-8);
 
 **Example Usage:**
 
@@ -55,14 +70,18 @@ API Description
 
     #include <vector>
     #include <iostream>
-    #include <JacobiPCG.h>
+    #include <PCG_Solver.h>
 
     int main() {
-        // Parse CSR matrix A and vector b
         CSR A;
-        vector<double> b;
-        vector<double> x;
-        x = JacobiPCG(A, b);
+        vector<double> b, x;
+
+        // Default: Jacobi preconditioner
+        x = PCG_Solver(A, b);
+
+        // Switch to Gauss–Seidel preconditioner
+        x = PCG_Solver(A, b, PreconditionerType::GaussSeidel);
+
         return 0;
     }
 
@@ -76,14 +95,13 @@ Engineering Infrastructure
 
 Development Schedule
 ====================
-
 * **Week 1 (10/6):** Implement CSR matrix parser.
 * **Week 2 (10/13):** Implement Jacobi preconditioner (diagonal extraction & inverse).
-* **Week 3 (10/20):** Implement Conjugate Gradient solver.
-* **Week 4 (10/27):** Integrate preconditioner with CG (JacobiPCG solver).
-* **Week 5 (11/03):** Add parallel acceleration (OpenMP/MKL), or maybe see if we can make some optimizations based on this method.
-* **Week 6 (11/10):** Finalize API interface.
-* **Week 7 (11/17):** Validate solver accuracy and performance.
+* **Week 3 (10/20):** Implement Conjugate Gradient solver core.
+* **Week 4 (10/27):** Integrate Jacobi preconditioner with CG (JacobiPCG).
+* **Week 5 (11/03):** Add parallel acceleration (OpenMP/MKL) for JacobiPCG.
+* **Week 6 (11/10):** Implement Gauss–Seidel preconditioner.
+* **Week 7 (11/17):** Extend solver to support multiple preconditioners via `PreconditionerType` enum.
 * **Week 8 (11/24):** Conduct functional tests, prepare presentation/demo, and finalize documentation.
 
 References

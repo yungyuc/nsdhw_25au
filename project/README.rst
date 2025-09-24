@@ -73,8 +73,8 @@ Follow the format to add your project:
    `VLSIGR <Duck997/README.rst>`__:
    https://github.com/Duck997/VLSIGR
 8. `3829penguin <https://github.com/3829penguin>`__ for
-   `JacobiPCG <3829penguin/README.rst>`__:
-   https://github.com/3829penguin/JacobiPCG
+   `PCG <3829penguin/README.rst>`__:
+   https://github.com/3829penguin/PCG
 .. note::
 
   Append your project after the first example entry.  Do not delete the example

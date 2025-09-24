@@ -39,5 +39,5 @@ test: $(TARGET)
 	PYTHONPATH=".:$(PYTHONPATH)" $(PYTHON) -m pytest -v test_rad.py
 
 clean:
- 	rm -rf $(TARGET) __pycache__ .pytest_cache *.o *.so *.pyd
+	rm	-rf $(TARGET) __pycache__ .pytest_cache *.o *.so *.pyd
 

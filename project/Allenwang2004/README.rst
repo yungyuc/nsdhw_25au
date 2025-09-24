@@ -132,13 +132,12 @@ Week Milestone
 
 * 09/27  Repository setup, literature review, project skeleton(C++ core + Python binding)
 * 10/04  Implement primal/dual updates and support for L1, L2 proximal operators
-* 10/11  Benchmark on synthetic distributed Lasso && Ridge regression
-* 10/18  Python binding with Pybind11
-* 10/25  Add plotting / convergence diagnostics
-* 11/01  Extend to PCA / Matrix Completion via ADMM formulation
-* 11/08  Optimize performance, memory usage; profile bottlenecks
-* 11/15  Finalize README, write docs
-
+* 10/11  Benchmark on synthetic distributed Lasso && Ridge regression and python binding with Pybind11
+* 10/18  Add plotting / convergence diagnostics and prepare for PCA / Matrix Completion knowledge
+* 10/25  Extend to PCA / Matrix Completion via ADMM formulation
+* 11/01  Optimize performance, memory usage; profile bottlenecks
+* 11/08  Finalize README, write docs
+* 11/15  Stretch goal: multi-threading
 
 References
 ============

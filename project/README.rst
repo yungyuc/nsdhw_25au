@@ -72,6 +72,9 @@ Follow the format to add your project:
 7. `Duck997 <https://github.com/Duck997>`__ for
    `VLSIGR <Duck997/README.rst>`__:
    https://github.com/Duck997/VLSIGR
+8. `Allenwang2004 <https://github.com/Allenwang2004>`__ for
+   `consensus-admm <Allenwang2004/README.rst>`__:
+   https://github.com/Allenwang2004/consensus-admm
 
 .. note::
 

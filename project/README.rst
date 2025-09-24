@@ -72,7 +72,9 @@ Follow the format to add your project:
 7. `Duck997 <https://github.com/Duck997>`__ for
    `VLSIGR <Duck997/README.rst>`__:
    https://github.com/Duck997/VLSIGR
-
+8. `3829penguin <https://github.com/3829penguin>`__ for
+   `JacobiPCG <3829penguin/README.rst>`__:
+   https://github.com/3829penguin/JacobiPCG
 .. note::
 
   Append your project after the first example entry.  Do not delete the example

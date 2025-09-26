@@ -75,6 +75,9 @@ Follow the format to add your project:
 8. `Allenwang2004 <https://github.com/Allenwang2004>`__ for
    `consensus-admm <Allenwang2004/README.rst>`__:
    https://github.com/Allenwang2004/consensus-admm
+9. `ren-yi-wang-david <https://github.com/ren-yi-wang-david>`__ for
+   `FTST <ren-yi-wang-david/README.rst>`__:
+   https://github.com/ren-yi-wang-david/FTST 
 
 .. note::
 

@@ -75,6 +75,9 @@ Follow the format to add your project:
 8. `Allenwang2004 <https://github.com/Allenwang2004>`__ for
    `consensus-admm <Allenwang2004/README.rst>`__:
    https://github.com/Allenwang2004/consensus-admm
+9. `Kuishinboy987 <https://github.com/Kuishinboy987>`__ for
+   `R-tree <Kuishinboy987/README.rst>`__:
+   https://github.com/Kuishinboy987/R-tree
 
 .. note::
 

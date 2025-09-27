@@ -78,7 +78,8 @@ Follow the format to add your project:
 9. `Kuishinboy987 <https://github.com/Kuishinboy987>`__ for
    `R-tree <Kuishinboy987/README.rst>`__:
    https://github.com/Kuishinboy987/R-tree
-
+10. `chu-siang <https://github.com/chu-siang>`__ for `O-GRPO <chu-siang/README.rst>`:
+    https://github.com/chu-siang/O-GRPO
 .. note::
 
   Append your project after the first example entry.  Do not delete the example

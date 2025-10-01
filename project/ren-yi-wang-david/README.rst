@@ -46,17 +46,16 @@ Output:temperature distribution(.txt)and visualization output(heatmap)
 
 API Description
 ===============
-(python)
-from FTST import ThermalSolver
+.. code:: python
+                from FTST import ThermalSolver
 
-solver = ThermalSolver(nx=50, ny=50, k=150.0)
-solver.set_boundary("left", 300)
-solver.set_boundary("right", 350)
-solver.set_power_map("power_map.txt")
-
-solver.run("LU")
-solver.plot("heatmap.png")
-solver.write_csv("temperature.txt")
+                solver = ThermalSolver(nx=50, ny=50, k=150.0)
+                solver.set_boundary("left", 300)
+                solver.set_boundary("right", 350)
+                solver.set_power_map("power_map.txt")
+                solver.run("LU")
+                solver.plot("heatmap.png")
+                solver.write_csv("temperature.txt")
 
 Engineering Infrastructure
 ==========================
@@ -79,25 +78,30 @@ Programming languages: Python (visualization), C++ (computation)
 golden:ansys icepak
 
 Schedule
-========
+========    
 
-* Planning phase (6 weeks from 10/20 to 12/8):
+* Project Schedule (10 weeks from 10/6 to 12/8):
 
-* Week 1 (10/20): Initialize repository and Make/CMake build system; set up project structure;study heat transfer modeling.
+* Week 1 (10/6): Initialize repository and Make/CMake build system; set up project structure; study heat transfer modeling.
 
-* Week 2 (10/27): Implement 2D FDM discretization for steady-state heat equation; add Dirichlet boundary condition support; create Google Test cases.
+* Week 2 (10/13): Complete key notes on heat transfer modeling; draft FDM discretization derivations (documentation); set up baseline Google Test framework.
 
-* Week 3 (11/3): Implement LU decomposition solver in C++; validate with small synthetic power maps;and use icepak as golden function to check validation.
+* Week 3 (10/20): Implement 2D FDM discretization for steady-state heat equation; add Dirichlet boundary condition support; run initial unit tests.
 
-* Week 4 (11/10): Expose solver to Python using pybind11; enable NumPy array interop; test Python API with simple cases.
+* Week 4 (10/27): Implement LU decomposition solver in C++; validate with small synthetic power maps; perform preliminary validation against Icepak.
 
-* Week 5 (11/17): Validate re-check results against Icepak golden function; run micro-benchmarks; finalize testing framework (Google Test + pytest)
+* Week 5 (11/3): Expose solver to Python using pybind11; enable NumPy array interop; test Python API with simple cases; document mixed workflow.
 
-* Week 6 (11/24): performance analysis and optimize:time,memory and error,etc.
+* Week 6 (11/10): Re-check results against Icepak golden function; run micro-benchmarks; consolidate error analysis report.
 
-* Week 7 (12/1):Improve documentation (README, tutorials, API reference); freeze v0.1 API; polish and release v0.1.0 with demo presentation.
+* Week 7 (11/17): Performance analysis and optimize: time, memory, and error.
 
-* Week 8 (12/8): Prepare Final Report
+* Week 8 (11/24): Improve documentation (README, tutorials, API reference); draft v0.1 API freeze.
+
+* Week 9 (12/1): Finalize release v0.1.0; polish code, demos, and pytest coverage.
+
+* Week 10 (12/8): Prepare final report; demo presentation.
+
 
 References
 ==========

@@ -47,15 +47,17 @@ Output:temperature distribution(.txt)and visualization output(heatmap)
 API Description
 ===============
 .. code:: python
-                from FTST import ThermalSolver
 
-                solver = ThermalSolver(nx=50, ny=50, k=150.0)
-                solver.set_boundary("left", 300)
-                solver.set_boundary("right", 350)
-                solver.set_power_map("power_map.txt")
-                solver.run("LU")
-                solver.plot("heatmap.png")
-                solver.write_csv("temperature.txt")
+    from FTST import ThermalSolver
+
+    solver = ThermalSolver(nx=50, ny=50, k=150.0)
+    solver.set_boundary("left", 300)
+    solver.set_boundary("right", 350)
+    solver.set_power_map("power_map.txt")
+    solver.run("LU")
+    solver.plot("heatmap.png")
+    solver.write_csv("temperature.txt")
+
 
 Engineering Infrastructure
 ==========================

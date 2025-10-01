@@ -81,6 +81,10 @@ Follow the format to add your project:
 10. `ren-yi-wang-david <https://github.com/ren-yi-wang-david>`__ for
    `FTST <ren-yi-wang-david/README.rst>`__:
    https://github.com/ren-yi-wang-david/FTST 
+11. `Hikaru-shih <https://github.com/Hikaru-shih>`__ for
+   `tiny-fourier <Hikaru-shih/README.rst>`__:
+   https://github.com/Hikaru-shih/tiny-fourier
+>>>>>>> a12c224 (New submisiongit add project)
 
 .. note::
 

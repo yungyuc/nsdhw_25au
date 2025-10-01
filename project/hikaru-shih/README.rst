@@ -6,6 +6,10 @@ Topic
 -----
 A lightweight library for Fourier Transform on small-scale signals.
 
+Repository
+----------
+`tiny-fourier <https://github.com/Hikaru-shih/tiny-fourier>`_
+
 Problem to Solve
 -----------------------------
 Fourier Transform is a fundamental tool in signal processing, image analysis, 

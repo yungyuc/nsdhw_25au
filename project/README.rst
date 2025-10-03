@@ -78,6 +78,9 @@ Follow the format to add your project:
 9. `Kuishinboy987 <https://github.com/Kuishinboy987>`__ for
    `R-tree <Kuishinboy987/README.rst>`__:
    https://github.com/Kuishinboy987/R-tree
+10. `ren-yi-wang-david <https://github.com/ren-yi-wang-david>`__ for
+   `FTST <ren-yi-wang-david/README.rst>`__:
+   https://github.com/ren-yi-wang-david/FTST 
 
 .. note::
 

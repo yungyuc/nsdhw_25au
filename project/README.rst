@@ -81,7 +81,9 @@ Follow the format to add your project:
 10. `ren-yi-wang-david <https://github.com/ren-yi-wang-david>`__ for
    `FTST <ren-yi-wang-david/README.rst>`__:
    https://github.com/ren-yi-wang-david/FTST 
-
+11. `3829penguin <https://github.com/3829penguin>`__ for
+   `PCG-CP <3829penguin/README.rst>`__:
+   https://github.com/3829penguin/PCG-CP
 .. note::
 
   Append your project after the first example entry.  Do not delete the example

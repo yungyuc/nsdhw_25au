@@ -6,6 +6,7 @@ Basic Information
 
 The PCG-CP (Preconditioned Conjugate Gradient – Configurable Preconditioners) project is a C++ library designed to efficiently solve large-scale sparse linear systems that typically arise from finite-difference modeling of thermal problems in advanced IC and package designs.
 It provides a unified interface for the Conjugate Gradient (CG) solver enhanced with configurable preconditioners, enabling faster convergence on ill-conditioned symmetric positive definite (SPD) systems.
+
 **Repository:** `https://github.com/3829penguin/PCG-CP <https://github.com/3829penguin/PCG-CP>`_
 
 Problem Statement

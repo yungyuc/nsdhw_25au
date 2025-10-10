@@ -1,4 +1,4 @@
-Project Proposal
+Fourier-Transform-Library
 ================
 
 Topic
@@ -7,7 +7,7 @@ A lightweight library for Fourier Transform on small-scale signals.
 
 Repository
 ----------
-`tiny-fourier <https://github.com/Hikaru-shih/tiny-fourier>`_
+`Fourier-Transform-Library <https://github.com/Hikaru-shih/Fourier-Transform-Library>`_
 
 Problem to Solve
 -----------------------------
@@ -44,13 +44,13 @@ Technical Approach
 
 Schedule
 --------
-- Week 3–4: Survey existing FFT libraries and confirm project scope.  
-- Week 5–6: Implement 1D DFT and Inverse DFT.  
-- Week 7: Write unit tests and set up CI/CD pipeline.  
-- Week 8–9: Extend to 2D Fourier Transform and visualization utilities.  
-- Week 10–11: Benchmark against NumPy FFT and optimize code.  
-- Week 12: Finalize documentation and usage examples.  
-- Week 13–14: Prepare final report and presentation.  
+- Week 1 (10/13): Survey existing FFT libraries and confirm project scope.  
+- Week 1 (10/13): Implement 1D DFT and Inverse DFT.  
+- Week 2-3 (10/26): Write unit tests and set up CI/CD pipeline.  
+- Week 2-3 (10/26): Extend to 2D Fourier Transform and visualization utilities.  
+- Week 4 (11/02): Compare performance with NumPy FFT and optimize code.  
+- Week 5 (11/9): Finalize documentation and usage examples.  
+- Week 6 (11/16): Prepare final report and presentation.  
 
 References
 ----------

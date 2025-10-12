@@ -49,41 +49,45 @@ Projects by Account Names
 
 Follow the format to add your project:
 
-0. `github_account_name <https://github.com/github_account_name>`__ for
-   `Project subject <github_account_name/README.rst>`__:
-   https://github.com/github_account_name/project_name
-1. `Tsaimingchun14 <https://github.com/Tsaimingchun14>`__ for
-   `hmm-train <https://github.com/Tsaimingchun14/hmm-train/blob/main/README.rst>`__:
-   https://github.com/Tsaimingchun14/hmm-train
-2. `Linkenreefefedas <https://github.com/Linkenreefefedas>`__ for
-   `CNDA <https://github.com/Linkenreefefedas/CNDA/blob/main/README.rst>`__:
-   https://github.com/Linkenreefefedas/CNDA
-3. `wei0107 <https://github.com/wei0107>`__ for
-   `pixfoundry <https://github.com/wei0107/PixFoundry/blob/main/README.rst>`__:
-   https://github.com/wei0107/PixFoundry
-4. `ryankert01 <https://github.com/ryankert01>`__ for
-   `Voronoi Diagram Toolkit <ryankert01/README.rst>`__:
-   https://github.com/ryankert01/voronoi-diagram-toolkit
-5. `lnfu <https://github.com/lnfu>`__ for
-   `DEATH: Differential Expression Analysis Tool for High-throughput NGS <lnfu/README.rst>`__: https://github.com/lnfu/death
-6. `heyvrann <https://github.com/heyvrann>`__ for
-   `R-tree Search Engine <heyvrann/README.rst>`__:
-   https://github.com/heyvrann/RTSE
-7. `Duck997 <https://github.com/Duck997>`__ for
-   `VLSIGR <Duck997/README.rst>`__:
-   https://github.com/Duck997/VLSIGR
-8. `Allenwang2004 <https://github.com/Allenwang2004>`__ for
-   `consensus-admm <Allenwang2004/README.rst>`__:
-   https://github.com/Allenwang2004/consensus-admm
-9. `Kuishinboy987 <https://github.com/Kuishinboy987>`__ for
-   `R-tree <Kuishinboy987/README.rst>`__:
-   https://github.com/Kuishinboy987/R-tree
-10. `ren-yi-wang-david <https://github.com/ren-yi-wang-david>`__ for
-   `FTST <ren-yi-wang-david/README.rst>`__:
-   https://github.com/ren-yi-wang-david/FTST 
-11. `3829penguin <https://github.com/3829penguin>`__ for
+..
+  0. `github_account_name <https://github.com/github_account_name>`__ for
+     `Project subject <github_account_name/README.rst>`__:
+     https://github.com/github_account_name/project_name
+
+1. `3829penguin <https://github.com/3829penguin>`__ for
    `PCG-CP <3829penguin/README.rst>`__:
    https://github.com/3829penguin/PCG-CP
+2. `Allenwang2004 <https://github.com/Allenwang2004>`__ for
+   `consensus-admm <Allenwang2004/README.rst>`__:
+   https://github.com/Allenwang2004/consensus-admm
+3. `Duck997 <https://github.com/Duck997>`__ for
+   `VLSIGR <Duck997/README.rst>`__:
+   https://github.com/Duck997/VLSIGR
+4. `Kuishinboy987 <https://github.com/Kuishinboy987>`__ for
+   `R-tree <Kuishinboy987/README.rst>`__:
+   https://github.com/Kuishinboy987/R-tree
+5. `Linkenreefefedas <https://github.com/Linkenreefefedas>`__ for
+   `CNDA <Linkenreefefedas/README.rst>`__:
+   https://github.com/Linkenreefefedas/CNDA
+6. `Tsaimingchun14 <https://github.com/Tsaimingchun14>`__ for
+   `hmm-train <Tsaimingchun14/README.rst>`__:
+   https://github.com/Tsaimingchun14/hmm-train
+7. `heyvrann <https://github.com/heyvrann>`__ for
+   `R-tree Search Engine <heyvrann/README.rst>`__:
+   https://github.com/heyvrann/RTSE
+8. `lnfu <https://github.com/lnfu>`__ for
+   `DEATH <lnfu/README.rst>`__:
+   https://github.com/lnfu/death
+9. `ren-yi-wang-david <https://github.com/ren-yi-wang-david>`__ for
+   `FTST <ren-yi-wang-david/README.rst>`__:
+   https://github.com/ren-yi-wang-david/FTST
+10. `ryankert01 <https://github.com/ryankert01>`__ for
+    `Voronoi Diagram Toolkit <ryankert01/README.rst>`__:
+    https://github.com/ryankert01/voronoi-diagram-toolkit
+11. `wei0107 <https://github.com/wei0107>`__ for
+    `pixfoundry <wei0107/README.rst>`__:
+    https://github.com/wei0107/PixFoundry
+
 .. note::
 
   Append your project after the first example entry.  Do not delete the example

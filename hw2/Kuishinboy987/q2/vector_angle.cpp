@@ -21,8 +21,14 @@ double vector_angle(double x1, double y1, double x2, double y2)
     return std::acos(cos_theta);
 }
 
+<<<<<<< HEAD
 PYBIND11_MODULE(vector_angle, m) {
     m.doc() = "Calculate angle between 2D vectors";
     m.def("vector_angle", &vector_angle, "Compute angle between 2D vectors",
           py::arg("x1"), py::arg("y1"), py::arg("x2"), py::arg("y2"));
 }
+=======
+PYBIND11_MODULE(_vector, m) {
+    m.def("vector_angle", &vector_angle, "Compute angle between 2D vectors");
+}
+>>>>>>> 6875a5b (Update vector_angle.cpp)

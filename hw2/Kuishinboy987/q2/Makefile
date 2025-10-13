@@ -4,7 +4,7 @@ CXXFLAGS = -O3 -Wall -shared -std=c++17 -fPIC
 PYBIND11_CFLAGS = $(shell $(PYTHON) -m pybind11 --includes)
 PYTHON_EXT = $(shell $(PYTHON) -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
 
-TARGET = vector_angle$(PYTHON_EXT)
+TARGET = _vector$(PYTHON_EXT)
 SRC = vector_angle.cpp
 
 all: $(TARGET)

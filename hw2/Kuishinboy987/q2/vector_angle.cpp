@@ -21,6 +21,6 @@ double vector_angle(double x1, double y1, double x2, double y2)
     return std::acos(cos_theta);
 }
 
-PYBIND11_MODULE(vector_angle, m) { 
-    m.def("vector_angle", &vector_angle, "Compute angle between 2D vectors"); 
+PYBIND11_MODULE(_vector, m) {
+    m.def("vector_angle", &vector_angle, "Compute angle between 2D vectors");
 }

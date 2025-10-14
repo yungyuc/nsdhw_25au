@@ -1,9 +1,8 @@
 import math
-import math
 import pytest
 import _vector as vector_angle
 
-def test_same_direction(): 
+def test_same_direction():
     assert math.isclose(vector_angle.vector_angle(1, 0, 2, 0), 0.0, rel_tol=1e-9)
 
 def test_opposite_direction():

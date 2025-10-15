@@ -219,16 +219,52 @@ Engineering Infrastructure
 Schedule
 --------
 
-- **Planning phase (8 weeks from 09/22 to 11/09)**
-- Week 1 (09/22): Repo genearte, baseline GRPO run on V100.
-- Week 2 (09/30): Profiling hooks,Docker setup, tune gen_kwargs, enforce FP16 inference.
-- Week 3 (10/08): Implement C++ ``fused_sample_ext``, A/B test vs Python.
-- Week 4 (10/15): Integrate Reward Model via TRL RewardTrainer, vectorize
-  reward.
-- Week 5 (10/22): Multi-GPU scaling with Accelerate/DeepSpeed.
-- Week 6 (10/29): Error handling, determinism, dashboard for metrics.
-- Week 7 (11/02): Finalize docs and present work.
-- Week 8 (11/09): Final A/B (baseline vs optimized), tag v0.1.0 release.
+- **Planning phase (8 weeks from 09/22 to 11/25)**
+- Week 1 (09/22): Repo generate, baseline GRPO run on V100.
+- Week 2 (09/30): Profiling hooks, enforce FP16 inference.
+- Week 3 (10/19): Baseline Profiling and Build Setup
+  - Verify that the Qwen2.5-VL model and dependencies run correctly on the V100 GPU.
+  - Profile the baseline attention module using Nsight Systems to confirm
+    that kernel launch overhead dominates runtime.
+  - Create a new directory ``cpp_ext/`` and set up a working ``setup.py`` build
+    script for compiling custom CUDA extensions.
+  - Ensure the environment builds successfully with dummy kernels and imports
+    correctly in Python.
+
+- Week 4 (10/28): Implement ``h2d_once.cu`` and PyBind Interface
+  - Design and implement ``h2d_once.cu`` to batch all model tensors (Q, K, V, mask)
+    into one contiguous host buffer.
+  - Use ``cudaMemcpyAsync`` to copy all batched data in a single transfer per batch.
+  - Build and import this kernel in Python via the PyBind interface
+    (``gpuops.h2d_once``).
+  - Compare transfer timing against PyTorch’s default copy behavior to confirm
+    reduced H2D overhead.
+
+- Week 5 (11/05): Implement ``masked_softmax.cu``
+  - Implement a fused CUDA kernel combining scaling, causal masking, and softmax
+    into a single operation.
+  - Use FP16 for input/output and FP32 for computation to maintain numerical accuracy.
+  - Build and test the function via PyBind (``gpuops.masked_softmax``), verifying
+    numerical correctness against ``torch.nn.functional.softmax``.
+
+- Week 6 (11/12): Integration and Functional Verification
+  - Modify ``transformers/models/qwen2_5_vl/modeling_qwen2_5_vl.py`` to replace
+    internal attention function calls with the new fused kernels.
+  - Confirm that the model produces correct output compared to the original
+    implementation.
+  - Verify numerical stability and correctness using a small inference test.
+
+- Week 7 (11/19): Performance Comparison and Profiling Visualization
+  - Run performance comparison and collect metrics: kernel-launch count,
+    per-token latency, total inference time, and GPU utilization.
+  - Visualize profiling data (e.g., Nsight Systems timeline) to demonstrate reduced
+    kernel fragmentation and fewer synchronization events.
+
+- Week 8 (11/25): Final Documentation
+  - Write a concise technical report (``docs/opt_report.md``) summarizing:
+    - profiling observations,
+    - kernel design and integration steps,
+    - benchmark and profiling results.
 
 References
 ----------

@@ -89,8 +89,10 @@ Follow the format to add your project:
     https://github.com/wei0107/PixFoundry
 12. `chu-siang <https://github.com/chu-siang>`__ for
     `O-GRPO <chu-siang/README.rst>`__:
+13. `Hikaru-shih <https://github.com/Hikaru-shih>`__ for
+    `Fourier-Transform-Library <Hikaru-shih/README.rst>`__:
+    https://github.com/Hikaru-shih/Fourier-Transform-Library
 
-.. note::
 
   Append your project after the first example entry.  Do not delete the example
   entry.

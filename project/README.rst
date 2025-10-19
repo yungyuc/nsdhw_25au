@@ -93,6 +93,7 @@ Follow the format to add your project:
     `Fourier-Transform-Library <Hikaru-shih/README.rst>`__:
     https://github.com/Hikaru-shih/Fourier-Transform-Library
 
+.. note::
 
   Append your project after the first example entry.  Do not delete the example
   entry.

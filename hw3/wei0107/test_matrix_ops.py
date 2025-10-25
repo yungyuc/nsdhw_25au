@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-import matrix_ops as mo
+import _matrix as mo
 
 rtol = 1e-10
 atol = 1e-10

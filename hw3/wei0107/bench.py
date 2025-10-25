@@ -1,6 +1,6 @@
 import os, time
 import numpy as np
-import matrix_ops as mo
+import _matrix as mo
 
 N = int(os.environ.get("SIZE","1500"))
 TILE = int(os.environ.get("TILE","128"))

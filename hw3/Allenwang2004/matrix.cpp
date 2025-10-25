@@ -2,13 +2,35 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
+#include <cmath>
 
 #include <pybind11/pybind11.h>
 
+// Handle different BLAS library includes
 #if defined(USE_MKL)
   #include <mkl_cblas.h>
-#else
+  #define CBLAS_AVAILABLE
+#elif defined(__APPLE__)
   #include <Accelerate/Accelerate.h>
+  #define CBLAS_AVAILABLE
+#else
+  // Try to include cblas.h for OpenBLAS or other implementations
+  #ifdef __has_include
+    #if __has_include(<cblas.h>)
+      #include <cblas.h>
+      #define CBLAS_AVAILABLE
+    #elif __has_include(<openblas/cblas.h>)
+      #include <openblas/cblas.h>
+      #define CBLAS_AVAILABLE
+    #endif
+  #endif
+  
+  // If no CBLAS found but we still need the constants for compilation
+  #ifndef CBLAS_AVAILABLE
+    #define CblasRowMajor 101
+    #define CblasNoTrans 111
+    // Don't declare cblas_dgemm here - we'll handle it in the function
+  #endif
 #endif
 
 class Matrix {
@@ -23,6 +45,21 @@ public:
     inline int cols() const { return cols_; }
     inline double* data() { return data_.data(); }
     inline const double* data() const { return data_.data(); }
+
+    // Equality operator
+    bool operator==(const Matrix& other) const {
+        if (rows_ != other.rows_ || cols_ != other.cols_) {
+            return false;
+        }
+        for (int i = 0; i < rows_; ++i) {
+            for (int j = 0; j < cols_; ++j) {
+                if (std::abs((*this)(i, j) - other(i, j)) > 1e-10) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 private:
     int rows_, cols_;
@@ -65,9 +102,11 @@ Matrix multiply_tile(const Matrix& A, const Matrix& B, int T) {
     return C;
 }
 
-// DGEMM using CBLAS (row-major)
+// DGEMM using CBLAS (row-major) or fallback to tiled if not available
 Matrix multiply_mkl(const Matrix& A, const Matrix& B) {
     if (A.cols() != B.rows()) throw std::invalid_argument("Incompatible dimensions");
+    
+#ifdef CBLAS_AVAILABLE
     Matrix C(A.rows(), B.cols());
 
     const int M = A.rows();
@@ -88,6 +127,10 @@ Matrix multiply_mkl(const Matrix& A, const Matrix& B) {
         C.data(), N        // ldc = N for row-major
     );
     return C;
+#else
+    // No CBLAS available, fallback to tiled implementation
+    return multiply_tile(A, B, 64);
+#endif
 }
 
 PYBIND11_MODULE(_matrix, m) {
@@ -99,8 +142,11 @@ PYBIND11_MODULE(_matrix, m) {
         .def("__setitem__", [](Matrix &mat, std::pair<int, int> idx, double value) {
             mat(idx.first, idx.second) = value;
         })
+        .def("__eq__", &Matrix::operator==)
         .def("rows", &Matrix::rows)
-        .def("cols", &Matrix::cols);
+        .def("cols", &Matrix::cols)
+        .def_property_readonly("nrow", &Matrix::rows)
+        .def_property_readonly("ncol", &Matrix::cols);
 
     m.def("multiply_naive", &multiply_naive, "Naive matrix multiplication");
     m.def("multiply_tile", &multiply_tile, "Tiled matrix multiplication", pybind11::arg("A"), pybind11::arg("B"), pybind11::arg("T"));

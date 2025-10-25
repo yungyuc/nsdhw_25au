@@ -27,7 +27,7 @@ test: $(TARGET)
 	python3 -m pytest -v
 
 benchmark: $(TARGET)
-	python3 benchmark.py --n 2000 --block 96 > performance.txt
+	python3 benchmark.py --n 2048 --block 64 > performance.txt
 
 clean:
 	rm -f $(TARGET) *.o performance.txt

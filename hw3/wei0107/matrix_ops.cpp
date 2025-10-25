@@ -97,78 +97,124 @@ Matrix multiply_tile(const Matrix& A, const Matrix& B, int tile=128){
     if (tile<=0) tile=64;
 
     const size_t M=A.rows(), K=A.cols(), N=B.cols();
-    Matrix C(M,N); 
+    Matrix C(M,N);
 
-    const double* a=A.data();
-    const double* b=B.data();
-    double* c=C.data();
+    const double* __restrict a = A.data();
+    const double* __restrict b = B.data();
+    double* __restrict c = C.data();
 
-    const size_t lda=K, ldb=N, ldc=N;
-    const size_t vec_size = 4; // AVX double 數量
+    const size_t lda = K, ldb = N, ldc = N;
+    const size_t vec_size = 4; // AVX2: 4 doubles
 
-    // K 軸塊迴圈 (最外層)
-    for(size_t k0=0;k0<K;k0+=tile){
-        const size_t k_max=std::min(k0+(size_t)tile,K);
+    for(size_t k0=0; k0<K; k0+=tile){
+        const size_t k_max = std::min(k0 + (size_t)tile, K);
 
-        // M 軸塊迴圈
-        for(size_t i0=0;i0<M;i0+=tile){
-            const size_t i_max=std::min(i0+(size_t)tile,M);
-            
-            // N 軸塊迴圈
-            for(size_t j0=0;j0<N;j0+=tile){ 
-                const size_t j_max=std::min(j0+(size_t)tile,N);
-                
-                // 註冊分塊 i 迴圈 (i+=2)
-                for(size_t i=i0;i<i_max;i+=2){ 
-                    const size_t i1 = std::min(i + 1, i_max - 1);
+        for(size_t i0=0; i0<M; i0+=tile){
+            const size_t i_max = std::min(i0 + (size_t)tile, M);
 
-                    // 註冊分塊 j 迴圈 (j+=4)
+            for(size_t j0=0; j0<N; j0+=tile){
+                const size_t j_max = std::min(j0 + (size_t)tile, N);
+
+                for(size_t i=i0; i<i_max; i+=2){
+                    const bool has_pair = (i + 1 < i_max);
+                    const size_t i1 = i + 1;
+
                     const size_t j_vec_max = j0 + ((j_max - j0) & ~(vec_size - 1));
-                    for(size_t j=j0;j<j_vec_max;j+=vec_size){
-                        
-                        // 1. 載入 C 的原有值到累積器 (這是關鍵修正點!)
-                        //    C[i,j] = C[i,j] + A[i,k] * B[k,j]
-                        __m256d c_acc0 = _mm256_loadu_pd(c + i*ldc + j); 
-                        __m256d c_acc1 = _mm256_loadu_pd(c + i1*ldc + j);
 
-                        // K 軸內迴圈 (k0 到 k_max)
-                        for(size_t k=k0;k<k_max;++k){
-                            
-                            const double aik = a[i*lda + k];
-                            const double a1k = a[i1*lda + k];
-                            
-                            // 載入 B 的元素
-                            const double* __restrict b_row = b + k*ldb + j; 
-                            __m256d b_vec = _mm256_loadu_pd(b_row); 
-                            
-                            // 執行 FMA 累積
-                            c_acc0 = _mm256_fmadd_pd(_mm256_set1_pd(aik), b_vec, c_acc0); 
-                            c_acc1 = _mm256_fmadd_pd(_mm256_set1_pd(a1k), b_vec, c_acc1);
+                    if (has_pair) {
+                        // 向量化：一次算兩列（i 與 i1）
+                        for(size_t j=j0; j<j_vec_max; j+=vec_size){
+                            __m256d c_acc0 = _mm256_loadu_pd(c + i*ldc  + j);
+                            __m256d c_acc1 = _mm256_loadu_pd(c + i1*ldc + j);
+
+                            size_t k = k0;
+                            // k-loop 展開 2
+                            for(; k + 1 < k_max; k += 2){
+                                const __m256d b0 = _mm256_loadu_pd(b + k*ldb     + j);
+                                const __m256d b1 = _mm256_loadu_pd(b + (k+1)*ldb + j);
+
+                                const __m256d a0  = _mm256_set1_pd(a[i*lda  + k]);
+                                const __m256d a0n = _mm256_set1_pd(a[i*lda  + (k+1)]);
+                                const __m256d a1  = _mm256_set1_pd(a[i1*lda + k]);
+                                const __m256d a1n = _mm256_set1_pd(a[i1*lda + (k+1)]);
+
+                                c_acc0 = _mm256_fmadd_pd(a0,  b0, c_acc0);
+                                c_acc0 = _mm256_fmadd_pd(a0n, b1, c_acc0);
+                                c_acc1 = _mm256_fmadd_pd(a1,  b0, c_acc1);
+                                c_acc1 = _mm256_fmadd_pd(a1n, b1, c_acc1);
+                            }
+                            // 若 k 剩 1
+                            if (k < k_max){
+                                const __m256d bv = _mm256_loadu_pd(b + k*ldb + j);
+                                const __m256d a0 = _mm256_set1_pd(a[i*lda  + k]);
+                                const __m256d a1 = _mm256_set1_pd(a[i1*lda + k]);
+                                c_acc0 = _mm256_fmadd_pd(a0, bv, c_acc0);
+                                c_acc1 = _mm256_fmadd_pd(a1, bv, c_acc1);
+                            }
+
+                            _mm256_storeu_pd(c + i*ldc  + j, c_acc0);
+                            _mm256_storeu_pd(c + i1*ldc + j, c_acc1);
                         }
 
-                        // 寫回 C 矩陣
-                        _mm256_storeu_pd(c + i*ldc + j, c_acc0);
-                        _mm256_storeu_pd(c + i1*ldc + j, c_acc1);
-                    }
+                        // 標量尾巴（j 的殘數）
+                        for(size_t j=j_vec_max; j<j_max; ++j){
+                            double sum0 = c[i*ldc  + j];
+                            double sum1 = c[i1*ldc + j];
 
-                    // 處理 j 迴圈剩餘部分 (非向量化)
-                    for(size_t j=j_vec_max; j<j_max; ++j){
-                        
-                        double sum0 = c[i*ldc + j]; // 載入 C 原有值
-                        double sum1 = c[i1*ldc + j];
+                            size_t k = k0;
+                            for(; k + 1 < k_max; k += 2){
+                                sum0 += a[i*lda  + k]     * b[k*ldb     + j]
+                                      + a[i*lda  + (k+1)] * b[(k+1)*ldb + j];
+                                sum1 += a[i1*lda + k]     * b[k*ldb     + j]
+                                      + a[i1*lda + (k+1)] * b[(k+1)*ldb + j];
+                            }
+                            if (k < k_max){
+                                sum0 += a[i*lda  + k] * b[k*ldb + j];
+                                sum1 += a[i1*lda + k] * b[k*ldb + j];
+                            }
 
-                        for(size_t k=k0;k<k_max;++k){
-                            sum0 += a[i*lda + k] * b[k*ldb + j];
-                            sum1 += a[i1*lda + k] * b[k*ldb + j];
+                            c[i*ldc  + j] = sum0;
+                            c[i1*ldc + j] = sum1;
+                        }
+                    } else {
+                        // 最後一列落單：只算第 i 列（避免 i1==i 重複）
+                        for(size_t j=j0; j<j_vec_max; j+=vec_size){
+                            __m256d c_acc0 = _mm256_loadu_pd(c + i*ldc + j);
+
+                            size_t k = k0;
+                            for(; k + 1 < k_max; k += 2){
+                                const __m256d b0 = _mm256_loadu_pd(b + k*ldb     + j);
+                                const __m256d b1 = _mm256_loadu_pd(b + (k+1)*ldb + j);
+                                const __m256d a0  = _mm256_set1_pd(a[i*lda + k]);
+                                const __m256d a0n = _mm256_set1_pd(a[i*lda + (k+1)]);
+                                c_acc0 = _mm256_fmadd_pd(a0,  b0, c_acc0);
+                                c_acc0 = _mm256_fmadd_pd(a0n, b1, c_acc0);
+                            }
+                            if (k < k_max){
+                                const __m256d bv = _mm256_loadu_pd(b + k*ldb + j);
+                                const __m256d a0 = _mm256_set1_pd(a[i*lda + k]);
+                                c_acc0 = _mm256_fmadd_pd(a0, bv, c_acc0);
+                            }
+                            _mm256_storeu_pd(c + i*ldc + j, c_acc0);
                         }
 
-                        c[i*ldc + j] = sum0; // 寫回 C
-                        c[i1*ldc + j] = sum1;
+                        for(size_t j=j_vec_max; j<j_max; ++j){
+                            double sum0 = c[i*ldc + j];
+                            size_t k = k0;
+                            for(; k + 1 < k_max; k += 2){
+                                sum0 += a[i*lda + k]     * b[k*ldb     + j]
+                                      + a[i*lda + (k+1)] * b[(k+1)*ldb + j];
+                            }
+                            if (k < k_max){
+                                sum0 += a[i*lda + k] * b[k*ldb + j];
+                            }
+                            c[i*ldc + j] = sum0;
+                        }
                     }
-                } // 結束 i 迴圈
-            } // 結束 j0 迴圈
-        } // 結束 i0 迴圈
-    } // 結束 k0 迴圈 (最外層)
+                } // i-loop
+            } // j0
+        } // i0
+    } // k0
 
     return C;
 }

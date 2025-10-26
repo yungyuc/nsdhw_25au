@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <cstddef>
 #include <cassert>
@@ -5,12 +6,40 @@
 #include <random>
 #include <stdexcept>
 #include <limits>
-#include <cblas.h>
 #include <cmath>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+
+
+
+// Handle different BLAS library includes
+#if defined(USE_MKL)
+  #include <mkl_cblas.h>
+  #define CBLAS_AVAILABLE
+#elif defined(__APPLE__)
+  #include <Accelerate/Accelerate.h>
+  #define CBLAS_AVAILABLE
+#else
+  // Try to include cblas.h for OpenBLAS or other implementations
+  #ifdef __has_include
+    #if __has_include(<cblas.h>)
+      #include <cblas.h>
+      #define CBLAS_AVAILABLE
+    #elif __has_include(<openblas/cblas.h>)
+      #include <openblas/cblas.h>
+      #define CBLAS_AVAILABLE
+    #endif
+  #endif
+
+  // If no CBLAS found but we still need the constants for compilation
+  #ifndef CBLAS_AVAILABLE
+    #define CblasRowMajor 101
+    #define CblasNoTrans 111
+    // Don't declare cblas_dgemm here - we'll handle it in the function
+  #endif
+#endif
 
 namespace py = pybind11;
 
@@ -74,18 +103,13 @@ static inline void check_mul_dims(const Matrix& A, const Matrix& B) {
 Matrix multiply_naive(const Matrix& A, const Matrix& B) {
     check_mul_dims(A, B);
     Matrix C(A.rows(), B.cols(), 0.0);
-
-    const std::size_t M = A.rows();
-    const std::size_t K = A.cols();
-    const std::size_t N = B.cols();
-
-    for (std::size_t i = 0; i < M; ++i) {
-        for (std::size_t k = 0; k < K; ++k) {
-            for (std::size_t j = 0; j < N; ++j) {
-                C(i, j) += A(i, k) * B(k, j);
-            }
+    for (size_t i = 0; i < A.rows(); ++i)
+        for (size_t j = 0; j < B.cols(); ++j) {
+            double sum = 0.0;
+            for (size_t k = 0; k < A.cols(); ++k)
+                sum += A(i,k) * B(k,j);
+            C(i,j) = sum;
         }
-    }
     return C;
 }
 

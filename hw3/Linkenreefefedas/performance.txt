@@ -1,0 +1,20 @@
+Matrix Multiplication Performance Report
+==================================================
+
+Matrix size: 1000x1000
+
+Timing Results:
+--------------------------------------------------
+Naive multiplication:  1.2839 seconds
+Tiled multiplication:  0.6508 seconds
+MKL DGEMM:             0.0393 seconds
+
+Performance Comparison:
+--------------------------------------------------
+Speedup (tile vs naive): 1.97x
+Speedup (mkl vs naive):  32.67x
+
+Tile is 49.3% faster than naive
+MKL is 96.9% faster than naive
+
+Verification: All results match (within tolerance 1e-8)

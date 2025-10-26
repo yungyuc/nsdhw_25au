@@ -81,12 +81,8 @@ Matrix multiply_naive(const Matrix& A, const Matrix& B) {
 
     for (std::size_t i = 0; i < M; ++i) {
         for (std::size_t k = 0; k < K; ++k) {
-            const double aik = A(i, k);
-            const std::size_t bk = k * N;
-            double* ci = C.data() + i * N;
-            const double* bptr = B.data() + bk;
             for (std::size_t j = 0; j < N; ++j) {
-                ci[j] += aik * bptr[j];
+                C(i, j) += A(i, k) * B(k, j);
             }
         }
     }
@@ -95,54 +91,29 @@ Matrix multiply_naive(const Matrix& A, const Matrix& B) {
 
 Matrix multiply_tile(const Matrix& A, const Matrix& B, int block) {
     check_mul_dims(A, B);
-    if (block <= 0) block = 64;
+    if (block <= 0) block = 16;
 
-    const size_t M = A.rows();
-    const size_t K = A.cols();
-    const size_t N = B.cols();
+    Matrix C(A.rows(), B.cols(), 0.0);
 
-    Matrix C(M, N, 0.0);
+    for (size_t ii = 0; ii < A.rows(); ii += (size_t)block) {
+        for (size_t jj = 0; jj < B.cols(); jj += (size_t)block) {
+            for (size_t kk = 0; kk < A.cols(); kk += (size_t)block) {
 
-    std::vector<double> BT((size_t)N * K);
-    {
-        const double* Bd = B.data();
-        for (size_t k = 0; k < K; ++k) {
-            const double* bk = Bd + k * N;
-            for (size_t j = 0; j < N; ++j) {
-                BT[j * K + k] = bk[j];
-            }
-        }
-    }
-
-    const double* Ad = A.data();
-    double*       Cd = C.data();
-
-    for (size_t ii = 0; ii < M; ii += (size_t)block) {
-        const size_t i_max = std::min(ii + (size_t)block, M);
-        for (size_t jj = 0; jj < N; jj += (size_t)block) {
-            const size_t j_max = std::min(jj + (size_t)block, N);
-            for (size_t kk = 0; kk < K; kk += (size_t)block) {
-                const size_t k_max = std::min(kk + (size_t)block, K);
-                const size_t len   = k_max - kk;
+                const size_t i_max = std::min(ii + (size_t)block, A.rows());
+                const size_t j_max = std::min(jj + (size_t)block, B.cols());
+                const size_t k_max = std::min(kk + (size_t)block, A.cols());
 
                 for (size_t i = ii; i < i_max; ++i) {
-                    double* ci = Cd + i * N;
-                    const double* ai = Ad + i * K;
-                    const double* ak = ai + kk;
-
-                    for (size_t j = jj; j < j_max; ++j) {
-                        const double* btj = &BT[j * K + kk];
-                        double acc = ci[j];
-                        for (size_t t = 0; t < len; ++t) {
-                            acc += ak[t] * btj[t];
+                    for (size_t k = kk; k < k_max; ++k) {
+                        const double aik = A(i, k);
+                        for (size_t j = jj; j < j_max; ++j) {
+                            C(i, j) += aik * B(k, j);
                         }
-                        ci[j] = acc;
                     }
                 }
             }
         }
     }
-
     return C;
 }
 

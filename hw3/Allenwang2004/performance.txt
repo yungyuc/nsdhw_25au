@@ -1,0 +1,3 @@
+Average time for Naive method: 0.107372 seconds
+Average time for Tiling method (tile size=16): 0.026653 seconds
+Average time for MKL method: 0.001988 seconds

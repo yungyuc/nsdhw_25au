@@ -1,0 +1,9 @@
+NSD HW3 Performance Report
+==========================
+Matrix size: 1500 x 1500
+TILE size:   128
+
+Naive: 0.565850 s
+Tiled: 0.365305 s  (speedup x1.55)
+Criterion (tiled < 0.8 * naive): PASS
+DGEMM: 0.022186 s

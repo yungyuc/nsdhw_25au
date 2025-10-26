@@ -1,0 +1,3 @@
+Start multiply_naive (repeat=5), take min = 0.1432926249690354 seconds
+Start multiply_mkl (repeat=5), take min = 0.004908124974463135 seconds
+MKL speed-up over naive: 29.195 x

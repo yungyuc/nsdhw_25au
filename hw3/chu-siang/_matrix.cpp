@@ -1,109 +1,105 @@
-// _matrix.cpp — pybind11 Matrix + GEMM (naive/tile/MKL-or-fallback)
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 #include <vector>
 #include <stdexcept>
-#include <algorithm>
 #include <cstddef>
+#include <cassert>
 
 namespace py = pybind11;
 
-// ---------- Optional MKL/CBLAS detection (compile-time) ----------
-#if defined(HAVE_MKL) && (HAVE_MKL+0)
-  #if __has_include(<mkl.h>)
-    #include <mkl.h>
-    #define MATRIX_HAVE_MKL 1
-  #elif __has_include(<cblas.h>)
-    #include <cblas.h>
-    #define MATRIX_HAVE_MKL 1
-  #else
-    #define MATRIX_HAVE_MKL 0
-  #endif
-#else
-  #define MATRIX_HAVE_MKL 0
+#ifdef HAVE_MKL
+  #include <mkl.h>
+  #include <mkl_cblas.h>
 #endif
 
-class Matrix {
-public:
+struct Matrix {
+    std::size_t nrow;
+    std::size_t ncol;
+    std::vector<double> buf; // row-major
+
     Matrix(std::size_t r, std::size_t c)
-        : nrow_(r), ncol_(c), data_(r*c, 0.0) {
-        if (r == 0 || c == 0) throw std::invalid_argument("nrow/ncol must be positive");
-    }
-    std::size_t nrow() const { return nrow_; }
-    std::size_t ncol() const { return ncol_; }
+        : nrow(r), ncol(c), buf(r * c, 0.0) {}
 
-    double get(std::size_t i, std::size_t j) const {
-        if (i >= nrow_ || j >= ncol_) throw std::out_of_range("index out of range");
-        return data_[i*ncol_ + j];
-    }
-    void set(std::size_t i, std::size_t j, double v) {
-        if (i >= nrow_ || j >= ncol_) throw std::out_of_range("index out of range");
-        data_[i*ncol_ + j] = v;
+    const double* data() const { return buf.data(); }
+    double*       data()       { return buf.data(); }
+
+    inline void bounds_check(std::ptrdiff_t i, std::ptrdiff_t j) const {
+        if (i < 0 || j < 0 || static_cast<std::size_t>(i) >= nrow || static_cast<std::size_t>(j) >= ncol) {
+            throw py::index_error("index out of range");
+        }
     }
 
-    bool operator==(const Matrix& o) const {
-        return nrow_ == o.nrow_ && ncol_ == o.ncol_ && data_ == o.data_;
+    double get(std::ptrdiff_t i, std::ptrdiff_t j) const {
+        bounds_check(i, j);
+        return buf[static_cast<std::size_t>(i) * ncol + static_cast<std::size_t>(j)];
+    }
+    void set(std::ptrdiff_t i, std::ptrdiff_t j, double v) {
+        bounds_check(i, j);
+        buf[static_cast<std::size_t>(i) * ncol + static_cast<std::size_t>(j)] = v;
     }
 
-    const double* raw() const { return data_.data(); }
-    double*       raw()       { return data_.data(); }
-
-private:
-    std::size_t nrow_, ncol_;
-    std::vector<double> data_;
+    bool equals(const Matrix& other) const {
+        if (nrow != other.nrow || ncol != other.ncol) return false;
+        for (std::size_t i = 0; i < buf.size(); ++i) {
+            if (buf[i] != other.buf[i]) return false;
+        }
+        return true;
+    }
 };
 
-// ---------------- naive (intentionally cache-unfriendly i-j-k) ----------------
-Matrix multiply_naive(const Matrix& A, const Matrix& B) {
-    if (A.ncol() != B.nrow()) throw std::invalid_argument("incompatible dimensions");
-    const std::size_t M = A.nrow(), K = A.ncol(), N = B.ncol();
-    Matrix C(M, N);
-    const double* ad = A.raw();
-    const double* bd = B.raw();
-    double* cd = C.raw();
+static inline void check_mul_dims(std::size_t a_m, std::size_t a_k,
+                                  std::size_t b_m, std::size_t b_n) {
+    if (a_k != b_m) {
+        throw py::value_error("shape mismatch: A(M,K) x B(K,N) required");
+    }
+    (void)a_m; (void)b_n;
+}
 
+static Matrix multiply_naive(const Matrix& A, const Matrix& B) {
+    const std::size_t M = A.nrow, K = A.ncol;
+    const std::size_t K2 = B.nrow, N = B.ncol;
+    check_mul_dims(M, K, K2, N);
+
+    Matrix C(M, N);
     for (std::size_t i = 0; i < M; ++i) {
-        for (std::size_t j = 0; j < N; ++j) {
-            double sum = 0.0;
-            for (std::size_t k = 0; k < K; ++k) {
-                sum += ad[i*K + k] * bd[k*N + j]; // stride-N through B's column
+        for (std::size_t k = 0; k < K; ++k) {
+            const double aik = A.buf[i * A.ncol + k];
+            if (aik == 0.0) continue;
+            for (std::size_t j = 0; j < N; ++j) {
+                C.buf[i * N + j] += aik * B.buf[k * N + j];
             }
-            cd[i*N + j] = sum;
         }
     }
     return C;
 }
 
-// ---------------- tiled (blocked i0-k0-j0; contiguous within tiles) ----------------
-Matrix multiply_tile(const Matrix& A, const Matrix& B, int tsize) {
-    if (A.ncol() != B.nrow()) throw std::invalid_argument("incompatible dimensions");
-    if (tsize <= 0) throw std::invalid_argument("tile size must be positive");
-    const std::size_t M = A.nrow(), K = A.ncol(), N = B.ncol();
+static Matrix multiply_tile(const Matrix& A, const Matrix& B, int tsize) {
+    if (tsize <= 0) {
+        throw py::value_error("tsize must be positive");
+    }
+    const std::size_t T = static_cast<std::size_t>(tsize);
+
+    const std::size_t M = A.nrow, K = A.ncol;
+    const std::size_t K2 = B.nrow, N = B.ncol;
+    check_mul_dims(M, K, K2, N);
+
     Matrix C(M, N);
 
-    const double* ad = A.raw();
-    const double* bd = B.raw();
-    double* cd = C.raw();
-
-    const std::size_t TM = (std::size_t)tsize;
-    const std::size_t TK = (std::size_t)tsize;
-    const std::size_t TN = (std::size_t)tsize;
-
-    for (std::size_t i0 = 0; i0 < M; i0 += TM) {
-        const std::size_t i_max = std::min(i0 + TM, M);
-        for (std::size_t k0 = 0; k0 < K; k0 += TK) {
-            const std::size_t k_max = std::min(k0 + TK, K);
-            for (std::size_t j0 = 0; j0 < N; j0 += TN) {
-                const std::size_t j_max = std::min(j0 + TN, N);
-
-                for (std::size_t i = i0; i < i_max; ++i) {
-                    double* ci = &cd[i*N + j0];
-                    for (std::size_t k = k0; k < k_max; ++k) {
-                        const double aik = ad[i*K + k];
-                        const double* bk = &bd[k*N + j0];
-                        for (std::size_t j = j0; j < j_max; ++j) {
-                            ci[j - j0] += aik * bk[j - j0]; // contiguous on tile
+    for (std::size_t ii = 0; ii < M; ii += T) {
+        for (std::size_t kk = 0; kk < K; kk += T) {
+            for (std::size_t jj = 0; jj < N; jj += T) {
+                const std::size_t iimax = std::min(ii + T, M);
+                const std::size_t kkmax = std::min(kk + T, K);
+                const std::size_t jjmax = std::min(jj + T, N);
+                for (std::size_t i = ii; i < iimax; ++i) {
+                    for (std::size_t k = kk; k < kkmax; ++k) {
+                        const double aik = A.buf[i * A.ncol + k];
+                        if (aik == 0.0) continue;
+                        double* __restrict cptr = &C.buf[i * N + jj];
+                        const double* __restrict bptr = &B.buf[k * N + jj];
+                        for (std::size_t j = jj; j < jjmax; ++j) {
+                            *cptr++ += aik * (*bptr++);
                         }
                     }
                 }
@@ -113,61 +109,57 @@ Matrix multiply_tile(const Matrix& A, const Matrix& B, int tsize) {
     return C;
 }
 
-// ---------------- MKL (or fallback) ----------------
-Matrix multiply_mkl(const Matrix& A, const Matrix& B) {
-    if (A.ncol() != B.nrow()) throw std::invalid_argument("incompatible dimensions");
-#if MATRIX_HAVE_MKL
-    const std::size_t M = A.nrow(), K = A.ncol(), N = B.ncol();
+static Matrix multiply_mkl(const Matrix& A, const Matrix& B) {
+#ifdef HAVE_MKL
+    const std::size_t M = A.nrow, K = A.ncol;
+    const std::size_t K2 = B.nrow, N = B.ncol;
+    check_mul_dims(M, K, K2, N);
+
     Matrix C(M, N);
-    const double alpha = 1.0, beta = 0.0;
+
+    // Row-major：lda=K, ldb=N, ldc=N
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                (int)M, (int)N, (int)K,
-                alpha,
-                A.raw(), (int)A.ncol(),
-                B.raw(), (int)B.ncol(),
-                beta,
-                C.raw(), (int)C.ncol());
+                static_cast<int>(M), static_cast<int>(N), static_cast<int>(K),
+                1.0,
+                A.data(), static_cast<int>(K),
+                B.data(), static_cast<int>(N),
+                0.0,
+                C.data(), static_cast<int>(N));
     return C;
 #else
-    // No MKL/CBLAS headers: fallback for correctness & portability
     return multiply_naive(A, B);
 #endif
 }
 
-// ---------------- pybind11 module (signed indices for safe bound checks) ----------------
 PYBIND11_MODULE(_matrix, m) {
-    m.doc() = "Matrix class + GEMM (naive/tile/MKL)";
+    m.doc() = "Matrix + GEMM implementations (naive/tiled/MKL)";
 
     py::class_<Matrix>(m, "Matrix")
-        .def(py::init<std::size_t, std::size_t>(), py::arg("nrow"), py::arg("ncol"))
-        .def_property_readonly("nrow", &Matrix::nrow)
-        .def_property_readonly("ncol", &Matrix::ncol)
+        .def(py::init<std::size_t, std::size_t>(),
+             py::arg("nrow"), py::arg("ncol"))
+        .def_property_readonly("nrow", [](const Matrix& self){ return self.nrow; })
+        .def_property_readonly("ncol", [](const Matrix& self){ return self.ncol; })
         .def("__getitem__", [](const Matrix& self, py::tuple ij) {
-            if (ij.size() != 2) throw std::out_of_range("index must be (i,j)");
-            py::ssize_t is = ij[0].cast<py::ssize_t>();
-            py::ssize_t js = ij[1].cast<py::ssize_t>();
-            if (is < 0 || js < 0) throw std::out_of_range("index out of range");
-            std::size_t i = static_cast<std::size_t>(is);
-            std::size_t j = static_cast<std::size_t>(js);
+            if (ij.size() != 2) throw py::index_error("need 2 indices (i, j)");
+            auto i = ij[0].cast<std::ptrdiff_t>();
+            auto j = ij[1].cast<std::ptrdiff_t>();
             return self.get(i, j);
         })
         .def("__setitem__", [](Matrix& self, py::tuple ij, double v) {
-            if (ij.size() != 2) throw std::out_of_range("index must be (i,j)");
-            py::ssize_t is = ij[0].cast<py::ssize_t>();
-            py::ssize_t js = ij[1].cast<py::ssize_t>();
-            if (is < 0 || js < 0) throw std::out_of_range("index out of range");
-            std::size_t i = static_cast<std::size_t>(is);
-            std::size_t j = static_cast<std::size_t>(js);
+            if (ij.size() != 2) throw py::index_error("need 2 indices (i, j)");
+            auto i = ij[0].cast<std::ptrdiff_t>();
+            auto j = ij[1].cast<std::ptrdiff_t>();
             self.set(i, j, v);
         })
-        .def(py::self == py::self)
-        .def("__repr__", [](const Matrix& mtx) {
-            return "Matrix(" + std::to_string(mtx.nrow()) + ", " + std::to_string(mtx.ncol()) + ")";
-        });
+        .def("__eq__", [](const Matrix& a, const Matrix& b){ return a.equals(b); })
+        .def("__ne__", [](const Matrix& a, const Matrix& b){ return !a.equals(b); })
+        ;
 
-    m.def("multiply_naive", &multiply_naive, "Naive matrix-matrix multiply (i-j-k)");
-    m.def("multiply_tile",  &multiply_tile,  py::arg("A"), py::arg("B"), py::arg("tsize"),
-          "Tiled matrix-matrix multiply (tsize > 0)");
-    m.def("multiply_mkl",   &multiply_mkl,   "DGEMM via MKL/CBLAS when available; fallback otherwise");
+    m.def("multiply_naive", &multiply_naive, "C = A * B (naive triple loop)",
+          py::arg("A"), py::arg("B"));
+    m.def("multiply_tile",  &multiply_tile,  "C = A * B (tiled)",
+          py::arg("A"), py::arg("B"), py::arg("tsize"));
+    m.def("multiply_mkl",   &multiply_mkl,   "C = A * B (MKL dgemm if available; fallback to naive otherwise)",
+          py::arg("A"), py::arg("B"));
 }
 

@@ -60,6 +60,7 @@ Follow the format to add your project:
 2. `Allenwang2004 <https://github.com/Allenwang2004>`__ for
    `consensus-admm <Allenwang2004/README.rst>`__:
    https://github.com/Allenwang2004/consensus-admm
+<<<<<<< HEAD
 3. `Duck997 <https://github.com/Duck997>`__ for
    `VLSIGR <Duck997/README.rst>`__:
    https://github.com/Duck997/VLSIGR
@@ -87,6 +88,11 @@ Follow the format to add your project:
 11. `wei0107 <https://github.com/wei0107>`__ for
     `pixfoundry <wei0107/README.rst>`__:
     https://github.com/wei0107/PixFoundry
+=======
+9. `ren-yi-wang-david <https://github.com/ren-yi-wang-david>`__ for
+   `FTST <ren-yi-wang-david/README.rst>`__:
+   https://github.com/ren-yi-wang-david/FTST 
+>>>>>>> d6977fd (更新 README.rst)
 
 .. note::
 

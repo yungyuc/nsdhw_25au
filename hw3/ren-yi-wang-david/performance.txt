@@ -1,0 +1,6 @@
+=== Matrix Multiplication Performance ===
+Matrix size: 1000 x 1000
+-----------------------------------------
+Naive: 0.426377s
+Tiled: 0.276311s  →  1.54x faster
+MKL:   0.039083s  →  10.91x faster

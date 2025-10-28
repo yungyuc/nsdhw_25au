@@ -43,7 +43,7 @@ clean:
 	rm -f $(SO) performance.txt
 
 test: all
-	pytest -q
+	$(PYTHON) -m pytest -q
 
 # Optional: large-size benchmark (>= 1000^2) writing performance.txt (naive/tile/mkl)
 benchmark: all

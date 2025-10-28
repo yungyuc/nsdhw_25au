@@ -1,0 +1,4 @@
+N=1000, TILE=100
+naive(ms): 888.009
+tile(ms):  520.314  (tile/naive = 0.585933)
+mkl(ms):   35.6524  (mkl/naive  = 0.0401487)

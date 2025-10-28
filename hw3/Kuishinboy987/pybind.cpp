@@ -9,6 +9,8 @@ PYBIND11_MODULE(_matrix, m) {
         .def(py::init<size_t,size_t>())
         .def("nrow", &Matrix::nrow)
         .def("ncol", &Matrix::ncol)
+        .def_property_readonly("nrow", &Matrix::nrow)
+        .def_property_readonly("ncol", &Matrix::ncol)
         .def("__getitem__", [](const Matrix& M, const std::pair<size_t,size_t>& ij){
             return M(ij.first, ij.second);
         })

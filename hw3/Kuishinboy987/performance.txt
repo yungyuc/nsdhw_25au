@@ -1,4 +1,3 @@
-N=1000, TILE=100
-naive(ms): 888.009
-tile(ms):  520.314  (tile/naive = 0.585933)
-mkl(ms):   35.6524  (mkl/naive  = 0.0401487)
+Start multiply_naive (repeat=5), take min = 0.8551843980021658 seconds
+Start multiply_mkl (repeat=5), take min = 0.03184719500131905 seconds
+MKL speed-up over naive: 26.8527 x

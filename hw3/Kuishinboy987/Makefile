@@ -4,10 +4,14 @@ CXXFLAGS := -O3 -march=native -fPIC -std=c++17 -Wall -Wextra
 # pybind11 / python
 PYINC := $(shell python3 -m pybind11 --includes)
 PYTHON_INCLUDES = $(shell python3-config --includes)
+PYTHON_LIB = $(shell python3-config --ldflags)
 EXT   := $(shell python3-config --extension-suffix)
 
-BLAS_LIBS ?= -lopenblas
-
+BLAS_LIBS := $(shell pkg-config --libs openblas 2>/dev/null)
+ifeq ($(strip $(BLAS_LIBS)),)
+BLAS_LIBS := -lblas
+endif
+  
 MOD := _matrix
 
 # ====== targets ======
@@ -16,7 +20,7 @@ MOD := _matrix
 all: $(MOD)$(EXT) perf
 
 $(MOD)$(EXT): pybind.o
-	$(CXX) -shared -fPIC $^ -o $@ $(BLAS_LIBS)
+	$(CXX) -shared -fPIC $^ -o $@ $(BLAS_LIBS) $(PYTHON_LIB)
 
 pybind.o: pybind.cpp mul_set.hpp
 	$(CXX) $(CXXFLAGS) $(PYTHON_INCLUDES) $(PYINC) -c $< -o $@
@@ -25,7 +29,7 @@ perf: perf.o
 	$(CXX) $^ -o $@ $(BLAS_LIBS)
 
 perf.o: perf.cpp mul_set.hpp
-	$(CXX) $(CXXFLAGS) $(PYTHON_INCLUDES) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 test: $(MOD)$(EXT)
 	python3 -m pytest -q

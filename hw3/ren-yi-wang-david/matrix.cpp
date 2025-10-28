@@ -144,8 +144,6 @@ Matrix multiply_tile(Matrix const &A, Matrix const &B, int block = 64) {
     return C;
 }
 
-
-
 PYBIND11_MODULE(_matrix, m) {
     py::class_<Matrix>(m, "Matrix")
         .def(py::init<size_t, size_t>())
@@ -160,7 +158,17 @@ PYBIND11_MODULE(_matrix, m) {
         // ✅ 新增這三個讓 Python 可以取出計時與運算資訊
         .def("elapsed", &Matrix::elapsed)
         .def("gflops", &Matrix::gflops)
-        .def_property_readonly("size", &Matrix::size);
+        .def_property_readonly("size", &Matrix::size)
+        // ✅ 關鍵：新增 __eq__，讓 Python 可以比較矩陣內容是否相等
+        .def("__eq__", [](const Matrix &self, const Matrix &other) {
+            if (self.nrow() != other.nrow() || self.ncol() != other.ncol())
+                return false;
+            for (size_t i = 0; i < self.nrow(); ++i)
+                for (size_t j = 0; j < self.ncol(); ++j)
+                    if (fabs(self(i, j) - other(i, j)) > 1e-9)
+                        return false;
+            return true;
+        });
 
     // 綁定三種乘法函數
     m.def("multiply_naive", &multiply_naive);

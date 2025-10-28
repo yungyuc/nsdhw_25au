@@ -63,16 +63,17 @@ static Matrix multiply_naive(const Matrix& A, const Matrix& B) {
 
     Matrix C(M, N);
     for (std::size_t i = 0; i < M; ++i) {
-        for (std::size_t k = 0; k < K; ++k) {
-            const double aik = A.buf[i * A.ncol + k];
-            if (aik == 0.0) continue;
-            for (std::size_t j = 0; j < N; ++j) {
-                C.buf[i * N + j] += aik * B.buf[k * N + j];
+        for (std::size_t j = 0; j < N; ++j) {
+            double sum = 0.0;
+            for (std::size_t k = 0; k < K; ++k) {
+                sum += A.buf[i * A.ncol + k] * B.buf[k * N + j];
             }
+            C.buf[i * N + j] = sum;
         }
     }
     return C;
 }
+
 
 static Matrix multiply_tile(const Matrix& A, const Matrix& B, int tsize) {
     if (tsize <= 0) {

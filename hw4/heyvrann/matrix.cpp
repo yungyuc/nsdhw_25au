@@ -72,6 +72,8 @@ public:
 
     std::size_t refcount() const { return m_impl->refcount; }
 
+    bool operator==(const ByteCounter& other) { return m_impl == other.m_impl; }
+
 private:
     ByteCounterImpl* m_impl;
     void incref() { ++m_impl->refcount; }

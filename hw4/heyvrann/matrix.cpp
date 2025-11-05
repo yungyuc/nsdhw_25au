@@ -74,6 +74,8 @@ public:
 
     bool operator==(const ByteCounter& other) { return m_impl == other.m_impl; }
 
+    bool operator!=(const ByteCounter& other) { return !((*this) == other); }
+
 private:
     ByteCounterImpl* m_impl;
     void incref() { ++m_impl->refcount; }

@@ -126,6 +126,18 @@ struct CustomAllocator {
     }
 };
 
+template <class T, class U>
+bool operator==(const CustomAllocator<T>& a, const CustomAllocator<U>& b)
+{
+    return a.counter == b.counter;
+}
+
+template <class T, class U>
+bool operator!=(const CustomAllocator<T>& a, const CustomAllocator<U>& b)
+{
+    return !(a == b);
+}
+
 template<class T>
 ByteCounter CustomAllocator<T>::counter{};
 

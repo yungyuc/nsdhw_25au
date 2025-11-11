@@ -128,7 +128,6 @@ const std::vector<double, CustomAllocator<double>> &Matrix::data() const { retur
 
 Matrix Matrix::transpose() const
 {
-    // The new matrix has swapped dimensions
     Matrix result(m_cols, m_rows);
     for (size_t i = 0; i < m_rows; ++i)
     {

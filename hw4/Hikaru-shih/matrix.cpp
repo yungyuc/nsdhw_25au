@@ -1,192 +1,171 @@
+#include <iostream>
+#include<bits/stdc++.h>
+#include <mkl.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
-#include <vector>
-#include <random>
-#include <stdexcept>
-#include <cstring>
-#include <atomic>
-#include <cmath>
-#include <algorithm>
-#include <dlfcn.h>
-#include <immintrin.h>
-
+using namespace std;
 namespace py = pybind11;
 
-namespace tracker {
-    static std::atomic<size_t> used_bytes{0};
-    static std::atomic<size_t> alloc_bytes{0};
-    static std::atomic<size_t> free_bytes{0};
-
-    inline void on_alloc(size_t b) {
-        alloc_bytes += b;
-        used_bytes += b;
-    }
-    inline void on_free(size_t b) {
-        free_bytes += b;
-        used_bytes -= b;
-    }
-
-    inline size_t current() { return used_bytes.load(); }
-    inline size_t total_alloc() { return alloc_bytes.load(); }
-    inline size_t total_free() { return free_bytes.load(); }
-}
-
-template <typename T>
-struct TrackedAlloc {
+template <class T>
+class CustomAllocator{
+public:
     using value_type = T;
-
-    TrackedAlloc() noexcept {}
-    template <typename U> TrackedAlloc(const TrackedAlloc<U>&) noexcept {}
-
-    T* allocate(std::size_t n) {
-        std::size_t bytes = n * sizeof(T);
-        tracker::on_alloc(bytes);
-        return static_cast<T*>(::operator new(bytes));
+    CustomAllocator() = default;
+    T* allocate(size_t n) {
+        if (n > numeric_limits<size_t>::max()/sizeof(T)) throw bad_alloc();
+        m_allocated += n*sizeof(T);
+        T *ret = (T *)(malloc(n*sizeof(T)));
+        if(ret == nullptr) throw bad_alloc();
+        return ret;
     }
-
-    void deallocate(T* p, std::size_t n) noexcept {
-        std::size_t bytes = n * sizeof(T);
-        tracker::on_free(bytes);
-        ::operator delete(p);
+    void deallocate(T *ptr, size_t n) {
+        m_deallocated += n*sizeof(T);
+        free(ptr);
     }
+    static size_t allocated() {return m_allocated;}
+    static size_t deallocated() {return m_deallocated;}
+    static size_t bytes() {
+        m_byte = m_allocated-m_deallocated;
+        return m_byte;
+    }
+private:
+    static size_t m_allocated, m_deallocated , m_byte;
 };
 
-template <typename T, typename U>
-bool operator==(const TrackedAlloc<T>&, const TrackedAlloc<U>&) { return true; }
-template <typename T, typename U>
-bool operator!=(const TrackedAlloc<T>&, const TrackedAlloc<U>&) { return false; }
-
-using dgemm_t = void(*)(int, int, int, int, int, int,
-                        double, const double*, int,
-                        const double*, int, double,
-                        double*, int);
-
-static dgemm_t load_blas() {
-    static dgemm_t fn = nullptr;
-    static bool tried = false;
-    if (tried) return fn;
-    tried = true;
-
-    const char* libs[] = {
-        "libopenblas.so", "libopenblas.so.0", "libmkl_rt.so", "libblas.so"
-    };
-    for (auto so : libs) {
-        void* handle = dlopen(so, RTLD_LAZY | RTLD_LOCAL);
-        if (!handle) continue;
-        fn = (dgemm_t)dlsym(handle, "cblas_dgemm");
-        if (fn) return fn;
-        dlclose(handle);
-    }
-    return nullptr;
-}
+template <class T> size_t CustomAllocator<T>::m_allocated = 0;
+template <class T> size_t CustomAllocator<T>::m_deallocated = 0;
+template <class T> size_t CustomAllocator<T>::m_byte = 0;
 
 class Matrix {
 public:
-    Matrix() : rows_(0), cols_(0) {}
-    Matrix(size_t r, size_t c, double val = 0.0)
-        : rows_(r), cols_(c), data_(r * c, val) {}
-
-    ~Matrix() {
-        std::vector<double, TrackedAlloc<double>>().swap(data_);
+    Matrix(): m_nrow(0), m_ncol(0), m_data(vector<double, CustomAllocator<double>>(0)) {}
+    Matrix(size_t nrow, size_t ncol): m_nrow(nrow), m_ncol(ncol), m_data(vector<double, CustomAllocator<double>>(nrow*ncol)) {}
+    bool operator == (Matrix const &matrix) const {
+        for (size_t i = 0; i < m_nrow; i++) 
+            for (size_t j = 0; j < m_ncol; j++)
+                if (m_data[i*m_ncol + j] != matrix(i, j)) 
+                    return false;
+        return true;
     }
-
-    size_t rows() const noexcept { return rows_; }
-    size_t cols() const noexcept { return cols_; }
-    double* data() noexcept { return data_.data(); }
-    const double* data() const noexcept { return data_.data(); }
-
-    double& operator()(size_t i, size_t j) noexcept { return data_[i * cols_ + j]; }
-    double  operator()(size_t i, size_t j) const noexcept { return data_[i * cols_ + j]; }
-
-    void fill(double v) { std::fill(data_.begin(), data_.end(), v); }
-
-    py::array_t<double> to_numpy() const {
-        return py::array_t<double>(
-            {(py::ssize_t)rows_, (py::ssize_t)cols_},
-            {(py::ssize_t)(cols_ * sizeof(double)), (py::ssize_t)sizeof(double)},
-            data_.data()
-        );
-    }
-
-    static Matrix from_numpy(const py::array_t<double, py::array::c_style | py::array::forcecast>& arr) {
-        if (arr.ndim() != 2) throw std::runtime_error("expected 2D array");
-        size_t r = arr.shape(0), c = arr.shape(1);
-        Matrix m(r, c);
-        std::memcpy(m.data(), arr.data(), sizeof(double) * r * c);
-        return m;
-    }
+    double operator() (size_t row, size_t col) const {return m_data[row * m_ncol + col];}
+    double& operator() (size_t row, size_t col) {return m_data[row * m_ncol + col];}
+    double* get_data() {return m_data.data();}
+    const double* get_data() const {return m_data.data();}
+    size_t nrow() const {return m_nrow;}
+    size_t ncol() const {return m_ncol;}
 
 private:
-    size_t rows_, cols_;
-    std::vector<double, TrackedAlloc<double>> data_;
+    size_t m_nrow;
+    size_t m_ncol;
+    vector<double, CustomAllocator<double>> m_data;
 };
 
-
-Matrix mul_basic(const Matrix& A, const Matrix& B) {
-    if (A.cols() != B.rows()) throw std::runtime_error("dimension mismatch");
-    size_t M = A.rows(), K = A.cols(), N = B.cols();
-    Matrix C(M, N);
-    for (size_t i = 0; i < M; ++i)
-        for (size_t k = 0; k < K; ++k) {
-            double a = A(i, k);
-            for (size_t j = 0; j < N; ++j)
-                C(i, j) += a * B(k, j);
+void setZero(Matrix& mat) {
+    size_t n = mat.nrow();
+    size_t m = mat.ncol();
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            mat(i, j) = 0.0;
         }
-    return C;
+    }
 }
 
-Matrix mul_blocked(const Matrix& A, const Matrix& B, int block = 64) {
-    if (A.cols() != B.rows()) throw std::runtime_error("dimension mismatch");
-    size_t M = A.rows(), K = A.cols(), N = B.cols();
-    Matrix C(M, N);
-    for (size_t ii = 0; ii < M; ii += block)
-        for (size_t jj = 0; jj < N; jj += block)
-            for (size_t kk = 0; kk < K; kk += block) {
-                size_t i_end = std::min(ii + (size_t)block, M);
-                size_t j_end = std::min(jj + (size_t)block, N);
-                size_t k_end = std::min(kk + (size_t)block, K);
-                for (size_t i = ii; i < i_end; ++i)
-                    for (size_t k = kk; k < k_end; ++k) {
-                        double a = A(i, k);
-                        for (size_t j = jj; j < j_end; ++j)
-                            C(i, j) += a * B(k, j);
-                    }
+void generateValue(Matrix& mat) {
+    size_t n = mat.nrow();
+    size_t m = mat.ncol();
+    double val;
+    for (size_t i = 0 ; i < n ; i++){
+        for (size_t j = 0 ; j < m ; j++){
+            val = rand() % 10;
+            mat(i, j) = val;
+        }
+    }
+}
+
+Matrix multiply_naive(Matrix const & mat1, Matrix const & mat2) {
+    if (mat1.ncol() != mat2.nrow()) throw out_of_range("matrices cannot be multiplied");
+    size_t n = mat1.nrow();
+    size_t m = mat1.ncol();
+    size_t p = mat2.ncol();
+    Matrix naive_mat(n, p);
+    double val;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < p; j++) {
+            val = 0.0;
+            for (size_t k = 0; k < m; k++) {
+                val += mat1(i, k) * mat2(k, j);
             }
-    return C;
+            naive_mat(i, j) = val;
+        }
+    }
+    return naive_mat;
 }
 
-Matrix mul_blas(const Matrix& A, const Matrix& B) {
-    if (A.cols() != B.rows()) throw std::runtime_error("dimension mismatch");
-    auto dgemm = load_blas();
-    if (!dgemm) throw std::runtime_error("No cblas_dgemm found on system.");
+Matrix multiply_tile(Matrix& mat1, Matrix& mat2, size_t tile_size) {
+    if (mat1.ncol() != mat2.nrow()) throw out_of_range("matrices cannot be multiplied");
+    size_t n = mat1.nrow();
+    size_t m = mat1.ncol();
+    size_t p = mat2.ncol();
+    Matrix tile_mat(n, p);
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < p; ++j) {
+            tile_mat(i, j) = 0.0;
+        }
+    }
+    double val;
+    for (size_t i = 0; i < n; i += tile_size) {
+        for (size_t j = 0; j < p; j += tile_size) {
+            for (size_t k = 0; k < m; k += tile_size) {
+                for (size_t ii = i; ii < min(i + tile_size, n); ii++) {
+                    for (size_t jj = j; jj < min(j + tile_size, p); jj++) {
+                        val = 0.0;
+                        for (size_t kk = k; kk < min(k + tile_size, m); kk++) {
+                            val += mat1(ii, kk) * mat2(kk, jj);
+                        }
+                        tile_mat(ii, jj) += val;
+                    }
+                }
+            }
+        }
+    }
+    return tile_mat;
+}
 
-    const int M = (int)A.rows(), K = (int)A.cols(), N = (int)B.cols();
-    Matrix C(M, N);
-    dgemm(101, 111, 111, M, N, K, 1.0,
-          A.data(), K, B.data(), N, 0.0, C.data(), N);
-    return C;
+Matrix multiply_mkl(const Matrix& mat1, const Matrix& mat2) {
+    if (mat1.ncol() != mat2.nrow()) throw out_of_range("matrices cannot be multiplied");
+    Matrix MKL_mat(mat1.nrow(), mat2.ncol());
+    cblas_dgemm(
+        CblasRowMajor, 
+        CblasNoTrans, 
+        CblasNoTrans, 
+        mat1.nrow(), 
+        mat2.ncol(), 
+        mat1.ncol(), 
+        1.0, 
+        mat1.get_data(), 
+        mat1.ncol(), 
+        mat2.get_data(), 
+        mat2.ncol(), 
+        0.0, 
+        MKL_mat.get_data(), 
+        mat2.ncol());
+    return MKL_mat;
 }
 
 PYBIND11_MODULE(_matrix, m) {
+    m.doc() = "Matrix multiply";
+    m.def("multiply_naive", &multiply_naive);
+    m.def("multiply_tile", &multiply_tile);
+    m.def("multiply_mkl", &multiply_mkl);
+    m.def("generateValue", &generateValue);
+    m.def("allocated", &CustomAllocator<double>::allocated);
+    m.def("deallocated", &CustomAllocator<double>::deallocated);
+    m.def("bytes", &CustomAllocator<double>::bytes);
     py::class_<Matrix>(m, "Matrix")
         .def(py::init<>())
-        .def(py::init<size_t, size_t, double>(), py::arg("rows"), py::arg("cols"), py::arg("init")=0.0)
-        .def("fill", &Matrix::fill)
-        .def("to_numpy", &Matrix::to_numpy)
-        .def_static("from_numpy", &Matrix::from_numpy)
-        .def_property_readonly("rows", &Matrix::rows)
-        .def_property_readonly("cols", &Matrix::cols)
-        .def("__getitem__", [](const Matrix& M, std::pair<size_t, size_t> ij){ return M(ij.first, ij.second); })
-        .def("__setitem__", [](Matrix& M, std::pair<size_t, size_t> ij, double v){ M(ij.first, ij.second)=v; });
-
-    // functions
-    m.def("multiply_naive", &mul_basic);
-    m.def("multiply_tile", &mul_blocked, py::arg("A"), py::arg("B"), py::arg("block")=64);
-    m.def("multiply_mkl", &mul_blas);
-
-    // memory stats
-    m.def("bytes", [](){ return tracker::current(); });
-    m.def("allocated", [](){ return tracker::total_alloc(); });
-    m.def("deallocated", [](){ return tracker::total_free(); });
+        .def(py::init<size_t, size_t>())
+        .def_property_readonly("nrow", [](const Matrix &mat) {return mat.nrow();})
+        .def_property_readonly("ncol", [](const Matrix &mat) {return mat.ncol();})
+        .def("__eq__", [](const Matrix &mat, const Matrix &other) { return mat == other;})
+        .def("__getitem__", [](const Matrix &m, pair<size_t, size_t> idx) {return m(idx.first, idx.second);})
+        .def("__setitem__", [](Matrix &m, pair<size_t, size_t> idx, double value) {m(idx.first, idx.second) = value;});
 }

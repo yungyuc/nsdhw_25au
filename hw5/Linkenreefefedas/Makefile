@@ -4,8 +4,9 @@ CXXFLAGS = -std=c++17 -O3 -Wall -Wextra -shared -fPIC
 
 # Python and pybind11
 PYTHON = python3
-PYBIND11_INCLUDES = $(shell $(PYTHON) -m pybind11 --includes 2>/dev/null || $(PYTHON) -c "import pybind11; print('-I' + pybind11.get_include() + ' -I' + pybind11.get_include(user=True))")
-NUMPY_INCLUDES = $(shell $(PYTHON) -c "import numpy; print('-I' + numpy.get_include())")
+PYTHON_INCLUDES = $(shell $(PYTHON)-config --includes 2>/dev/null || $(PYTHON) -c "import sysconfig; print('-I' + sysconfig.get_path('include'))")
+PYBIND11_INCLUDES = $(shell $(PYTHON) -m pybind11 --includes 2>/dev/null || $(PYTHON) -c "import pybind11; print('-I' + pybind11.get_include() + ' -I' + pybind11.get_include(user=True))" 2>/dev/null || echo "-I/usr/include/pybind11")
+NUMPY_INCLUDES = $(shell $(PYTHON) -c "import numpy; print('-I' + numpy.get_include())" 2>/dev/null || echo "")
 
 # MKL configuration - detect from Python environment
 MKL_INCLUDES := $(shell $(PYTHON) -c "import os; home = os.path.expanduser('~'); paths = [os.path.join(home, '.local/include'), '/usr/include/mkl', '/usr/include']; print(' '.join(['-I' + p for p in paths if os.path.exists(os.path.join(p, 'mkl.h'))]))" 2>/dev/null)
@@ -35,7 +36,7 @@ HEADERS = matrix.hpp
 all: $(TARGET)
 
 $(TARGET): $(SOURCES) $(HEADERS)
-	$(CXX) $(CXXFLAGS) -I. $(PYBIND11_INCLUDES) $(NUMPY_INCLUDES) $(MKL_INCLUDES) \
+	$(CXX) $(CXXFLAGS) -I. $(PYTHON_INCLUDES) $(PYBIND11_INCLUDES) $(NUMPY_INCLUDES) $(MKL_INCLUDES) \
 		-o $@ $(SOURCES) $(MKL_LIBS)
 
 clean:

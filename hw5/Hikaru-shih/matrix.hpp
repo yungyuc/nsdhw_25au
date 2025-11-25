@@ -1,44 +1,110 @@
-#pragma once
-
-#include <cstddef>
+#include <iostream>
+#include <algorithm>
 #include <vector>
-#include <stdexcept>
+#include <cblas.h>
 
-class Matrix
-{
+class Matrix {
 public:
-    using size_type = std::size_t;
+    Matrix(size_t r, size_t c)
+        : r_(r), c_(c), buf_(r * c)
+    {}
 
-    Matrix(size_type nrow, size_type ncol);
+    double operator()(size_t r, size_t c) const {
+        return buf_[r * c_ + c];
+    }
 
-    size_type nrow() const noexcept { return m_nrow; }
-    size_type ncol() const noexcept { return m_ncol; }
+    double& operator()(size_t r, size_t c) {
+        return buf_[r * c_ + c];
+    }
 
-    // element access
-    double & operator()(size_type i, size_type j);
-    double const & operator()(size_type i, size_type j) const;
+    size_t nrow() const { return r_; }
+    size_t ncol() const { return c_; }
 
-    // equality for testing
-    bool operator==(Matrix const & other) const noexcept;
+    const double* data() const { return buf_.data(); }
+    double* data() { return buf_.data(); }
+
+    bool operator==(Matrix const& o) const {
+        return (r_ == o.r_ && c_ == o.c_ && buf_ == o.buf_);
+    }
 
 private:
-    size_type m_nrow{0};
-    size_type m_ncol{0};
-    std::vector<double> m_data;   // row-major, size = nrow * ncol
-
-    size_type index(size_type i, size_type j) const noexcept
-    {
-        return i * m_ncol + j;
-    }
+    size_t r_;
+    size_t c_;
+    std::vector<double> buf_;
 };
 
-// ---- free functions for multiplication ----
+void populate(Matrix& m) {
+    for (size_t i = 0; i < m.nrow(); ++i) {
+        for (size_t j = 0; j < m.ncol(); ++j) {
+            m(i, j) = 1;
+        }
+    }
+}
 
-// naive i-j-k triple loop
-Matrix multiply_naive(Matrix const & A, Matrix const & B);
+Matrix multiply_naive(const Matrix& a, const Matrix& b) {
+    Matrix out(a.nrow(), b.ncol());
 
-// tiled (blocked) matmul
-Matrix multiply_tile(Matrix const & A, Matrix const & B);
+    for (size_t i = 0; i < out.nrow(); ++i) {
+        for (size_t k = 0; k < out.ncol(); ++k) {
+            double acc = 0;
+            for (size_t j = 0; j < a.ncol(); ++j) {
+                acc += a(i, j) * b(j, k);
+            }
+            out(i, k) = acc;
+        }
+    }
 
-// placeholder: here we simply reuse naive; you can later change to MKL if available.
-Matrix multiply_mkl(Matrix const & A, Matrix const & B);
+    return out;
+}
+
+Matrix multiply_tile(const Matrix& a, const Matrix& b, size_t T) {
+    size_t R = a.nrow();
+    size_t M = a.ncol();
+    size_t C = b.ncol();
+
+    Matrix out(R, C);
+
+    for (size_t i = 0; i < R; i += T) {
+        for (size_t j = 0; j < C; j += T) {
+            for (size_t k = 0; k < M; k += T) {
+                size_t i2 = std::min(i + T, R);
+                size_t j2 = std::min(j + T, C);
+                size_t k2 = std::min(k + T, M);
+
+                for (size_t ii = i; ii < i2; ++ii) {
+                    for (size_t jj = j; jj < j2; ++jj) {
+                        double acc = out(ii, jj);
+                        for (size_t kk = k; kk < k2; ++kk) {
+                            acc += a(ii, kk) * b(kk, jj);
+                        }
+                        out(ii, jj) = acc;
+                    }
+                }
+            }
+        }
+    }
+
+    return out;
+}
+
+Matrix multiply_mkl(const Matrix& a, const Matrix& b) {
+    int R = a.nrow();
+    int M = a.ncol();
+    int C = b.ncol();
+
+    Matrix out(a.nrow(), b.ncol());
+
+    cblas_dgemm(
+        CblasRowMajor,
+        CblasNoTrans,
+        CblasNoTrans,
+        R, C, M,
+        1.0,
+        a.data(), M,
+        b.data(), C,
+        0.0,
+        out.data(), C
+    );
+
+    return out;
+}

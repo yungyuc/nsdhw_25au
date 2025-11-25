@@ -1,23 +1,22 @@
-PYTHON      := python3
-PYCONFIG    := python3-config
+CXX = g++
+CXXFLAGS = -std=c++17 -O3 -march=native -fPIC
 
-CXX         := g++
-CXXFLAGS    := -O3 -std=c++17 -fPIC $(shell $(PYTHON) -m pybind11 --includes)
-LDFLAGS     := -shared $(shell $(PYCONFIG) --ldflags)
+TARGET = matrix
+OBJ = matrix.o
+LIB = matrix.so
 
-EXT_SUFFIX  := $(shell $(PYCONFIG) --extension-suffix)
-TARGET      := _matrix$(EXT_SUFFIX)
+PYTHON_INCLUDE ?= $(shell python3 -c "import sysconfig; print(sysconfig.get_paths()['include'])")
+PYTHON_LIB ?= $(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
 
-SOURCES     := mod.cpp matrix.cpp
-OBJECTS     := $(SOURCES:.cpp=.o)
+BLAS = -lblas -llapack
 
-all: $(TARGET)
+all: $(LIB)
 
-$(TARGET): $(OBJECTS)
-	$(CXX) $(LDFLAGS) -o $@ $^
+$(OBJ): matrix.cpp matrix.hpp
+	$(CXX) $(CXXFLAGS) -c matrix.cpp -I$(PYTHON_INCLUDE)
 
-%.o: %.cpp matrix.hpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(LIB): $(OBJ)
+	$(CXX) $(CXXFLAGS) -shared -o $@ $^ -L$(PYTHON_LIB) $(BLAS)
 
 clean:
-	rm -f $(OBJECTS) _matrix*.so
+	rm -f *.o *.so *.pyd

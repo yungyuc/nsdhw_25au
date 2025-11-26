@@ -8,7 +8,7 @@ PYTHON_LIBS := $(shell python3-config --ldflags)
 EXT := $(shell python3-config --extension-suffix)
 
 # BLAS (OpenBLAS or fallback)
-BLAS_LIBS := $(shell pkg-config --libs openblas 2>/dev/null)
+BLAS_LIBS := -lopenblas
 
 # Module name and C++ sources
 MOD := _matrix

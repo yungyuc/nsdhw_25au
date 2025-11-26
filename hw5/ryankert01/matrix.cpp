@@ -3,11 +3,7 @@
 #include <algorithm>
 #include <stdexcept>
 
-#if defined(USE_MKL)
-#include <mkl_cblas.h>
-#else
 #include <cblas.h>
-#endif
 
 Matrix::Matrix(std::size_t rows, std::size_t cols)
     : m_rows(rows), m_cols(cols), m_data(rows * cols, 0.0)

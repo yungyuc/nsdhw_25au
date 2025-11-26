@@ -1,36 +1,27 @@
 CXX := g++
-CXXFLAGS := -std=c++17 -O3 -fPIC -Wall -fopenmp -march=native
+CXXFLAGS := -std=c++17 -O3 -fPIC -Wall -Wextra -march=native
 
-PYBIND11_INCLUDES := $(shell python3 -m pybind11 --includes)
-PYTHON_INCLUDES   := $(shell python3-config --includes)
-PYTHON_LIBS       := $(shell python3-config --ldflags)
+# Python + pybind11 includes and libs
+PYINC := $(shell python3 -m pybind11 --includes)
+PYTHON_INCLUDES := $(shell python3-config --includes)
+PYTHON_LIBS := $(shell python3-config --ldflags)
+EXT := $(shell python3-config --extension-suffix)
 
-ifneq ($(MKLROOT),)
-CBLAS_INCLUDES := -I$(MKLROOT)/include
-CBLAS_LIBS := -L$(MKLROOT)/lib/intel64 -lmkl_rt
-else
-CBLAS_INCLUDES :=
-CBLAS_LIBS ?= -lopenblas
-endif
+# BLAS (OpenBLAS or fallback)
+BLAS_LIBS := $(shell pkg-config --libs openblas 2>/dev/null)
 
-ALL_INCLUDES := -I. $(PYBIND11_INCLUDES) $(PYTHON_INCLUDES) $(CBLAS_INCLUDES)
-ALL_LIBS     := $(CBLAS_LIBS) $(PYTHON_LIBS)
+# Module name and C++ sources
+MOD := _matrix
+SOURCES := matrix.cpp ../mod.cpp 
 
-SOURCES := matrix.cpp ../mod.cpp
-TARGET := _matrix$(shell python3-config --extension-suffix)
+all: $(MOD)$(EXT)
 
-
-.PHONY: all clean test benchmark
-all: $(TARGET)
-
-$(TARGET): $(SOURCES) matrix.hpp
-	$(CXX) $(CXXFLAGS) $(ALL_INCLUDES) -shared -o $@ $(SOURCES) $(ALL_LIBS)
-
-test: $(TARGET)
-	python3 -m pytest -v
-
-benchmark: $(TARGET)
-	python3 benchmark.py > performance.txt
+# Build rule: depend on matrix.hpp, but DO NOT compile it
+$(MOD)$(EXT): $(SOURCES) matrix.hpp
+	$(CXX) $(CXXFLAGS) \
+	    -I. $(PYTHON_INCLUDES) $(PYINC) \
+	    -shared $(SOURCES) -o $@ \
+	    $(PYTHON_LIBS) $(BLAS_LIBS)
 
 clean:
-	rm -f $(TARGET) *.o performance.txt
+	rm -f *.o *.so *.pyd

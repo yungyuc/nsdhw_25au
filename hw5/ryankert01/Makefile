@@ -7,7 +7,7 @@ PYTHON_INCLUDES := $(shell python3-config --includes)
 PYTHON_LIBS := $(shell python3-config --ldflags)
 EXT := $(shell python3-config --extension-suffix)
 
-# BLAS (OpenBLAS or fallback)
+# BLAS (OpenBLAS or fallback) 
 BLAS_LIBS := $(shell pkg-config --libs openblas 2>/dev/null)
 ifeq ($(BLAS_LIBS),)
     BLAS_LIBS := -lblas

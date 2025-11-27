@@ -87,6 +87,11 @@ Follow the format to add your project:
 11. `wei0107 <https://github.com/wei0107>`__ for
     `pixfoundry <wei0107/README.rst>`__:
     https://github.com/wei0107/PixFoundry
+12. `chu-siang <https://github.com/chu-siang>`__ for
+    `O-GRPO <chu-siang/README.rst>`__:
+13. `Hikaru-shih <https://github.com/Hikaru-shih>`__ for
+    `FFTCore <Hikaru-shih/README.rst>`__:
+    https://github.com/Hikaru-shih/FFTCore
 
 .. note::
 

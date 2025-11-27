@@ -29,19 +29,89 @@ entry too.  You can request my review in the PR.
 Presentation
 ============
 
-..
-  The presentation schedule is set.  If you want to change the time, ask for the
-  owner of the other time slot and file a PR tagging him or her and the
-  instructor (@yungyuc) against the branch `master`.  Everyone involved needs to
-  add a global comment to agree the exchange in the PR.  The PR subject line
-  should start with ``[presentation]``.
 
-  Each presenter has at most 15 minutes including setup.  A common arrangement is
-  to present for 12 minutes and use 3 minutes for questions and discussions.
+The presentation schedule is set.  If you want to change the time, ask for the
+owner of the other time slot and file a PR tagging him or her and the
+instructor (@yungyuc) against the branch `master`.  Everyone involved needs to
+add a global comment to agree the exchange in the PR.  The PR subject line
+should start with ``[presentation]``.
 
-  Presenters should prepare the computer.  It is OK to share.  If presenters have
-  difficulty in preparing a computer, they need to seek help and resolve the
-  issue one week (168 hours) before the presentation.
+Each presenter has at most 15 minutes including setup.  A common arrangement is
+to present for 12 minutes and use 2 minutes for questions and discussions.
+
+Presenters should prepare the computer.  It is OK to share.  If presenters have
+difficulty in preparing a computer, they need to seek help and resolve the
+issue one week (168 hours) before the presentation.
+
+Time Table
+++++++++++
+
+.. note::
+
+  The meeting room for the presentation is still EC114.
+
+.. list-table:: 15th June, 2025 (Monday) 7:00-9:50 (EC114)
+  :header-rows: 1
+
+  * - ID
+    - Time
+    - Presenter
+    - Project
+  * - 1
+    - 07:00 - 07:15
+    - `3829penguin <https://github.com/3829penguin>`__
+    - `PCG-CP <3829penguin/README.rst>`__:
+      https://github.com/3829penguin/PCG-CP
+  * - 2
+    - 07:15 - 07:30
+    - `Duck997 <https://github.com/Duck997>`__
+    - `VLSIGR <Duck997/README.rst>`__:
+      https://github.com/Duck997/VLSIGR
+  * - 3
+    - 07:30 - 07:45
+    - `Hikaru-shih <https://github.com/Hikaru-shih>`__
+    - `FFTCore <Hikaru-shih/README.rst>`__:
+      https://github.com/Hikaru-shih/FFTCore
+  * - 4
+    - 07:45 - 08:00
+    - `Kuishinboy987 <https://github.com/Kuishinboy987>`__
+    - `R-tree <Kuishinboy987/README.rst>`__:
+      https://github.com/Kuishinboy987/R-tree
+  * - 5
+    - 08:00 - 08:15
+    - `Linkenreefefedas <https://github.com/Linkenreefefedas>`__
+    - `CNDA <Linkenreefefedas/README.rst>`__:
+      https://github.com/Linkenreefefedas/CNDA
+  * - 6
+    - 08:15 - 08:30
+    - `chu-siang <https://github.com/chu-siang>`__
+    - `O-GRPO <chu-siang/README.rst>`__:
+      https://github.com/chu-siang/O-GRPO
+  * - 7
+    - 08:30 - 08:45
+    - `heyvrann <https://github.com/heyvrann>`__
+    - `R-tree Search Engine <heyvrann/README.rst>`__:
+      https://github.com/heyvrann/RTSE
+  * - 8
+    - 08:45 - 09:00
+    - `lnfu <https://github.com/lnfu>`__
+    - `DEATH <lnfu/README.rst>`__:
+      https://github.com/lnfu/death
+  * - 9
+    - 09:00 - 09:15
+    - `ren-yi-wang-david <https://github.com/ren-yi-wang-david>`__
+    - `FTST <ren-yi-wang-david/README.rst>`__:
+      https://github.com/ren-yi-wang-david/FTST
+  * - 10
+    - 09:15 - 09:30
+    - `ryankert01 <https://github.com/ryankert01>`__
+    - `Voronoi Diagram Toolkit <ryankert01/README.rst>`__:
+      https://github.com/ryankert01/voronoi-diagram-toolkit
+  * - 11
+    - 09:30 - 09:45
+    - `wei0107 <https://github.com/wei0107>`__
+    - `pixfoundry <wei0107/README.rst>`__:
+      https://github.com/wei0107/pixfoundry
 
 Projects by Account Names
 +++++++++++++++++++++++++

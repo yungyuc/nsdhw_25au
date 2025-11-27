@@ -57,21 +57,21 @@ Follow the format to add your project:
 1. `3829penguin <https://github.com/3829penguin>`__ for
    `PCG-CP <3829penguin/README.rst>`__:
    https://github.com/3829penguin/PCG-CP
-2. `Allenwang2004 <https://github.com/Allenwang2004>`__ for
-   `consensus-admm <Allenwang2004/README.rst>`__:
-   https://github.com/Allenwang2004/consensus-admm
-3. `Duck997 <https://github.com/Duck997>`__ for
+2. `Duck997 <https://github.com/Duck997>`__ for
    `VLSIGR <Duck997/README.rst>`__:
    https://github.com/Duck997/VLSIGR
+3. `Hikaru-shih <https://github.com/Hikaru-shih>`__ for
+   `FFTCore <Hikaru-shih/README.rst>`__:
+   https://github.com/Hikaru-shih/FFTCore
 4. `Kuishinboy987 <https://github.com/Kuishinboy987>`__ for
    `R-tree <Kuishinboy987/README.rst>`__:
    https://github.com/Kuishinboy987/R-tree
 5. `Linkenreefefedas <https://github.com/Linkenreefefedas>`__ for
    `CNDA <Linkenreefefedas/README.rst>`__:
    https://github.com/Linkenreefefedas/CNDA
-6. `Tsaimingchun14 <https://github.com/Tsaimingchun14>`__ for
-   `hmm-train <Tsaimingchun14/README.rst>`__:
-   https://github.com/Tsaimingchun14/hmm-train
+6. `chu-siang <https://github.com/chu-siang>`__ for
+   `O-GRPO <chu-siang/README.rst>`__:
+   https://github.com/chu-siang/O-GRPO
 7. `heyvrann <https://github.com/heyvrann>`__ for
    `R-tree Search Engine <heyvrann/README.rst>`__:
    https://github.com/heyvrann/RTSE
@@ -86,12 +86,7 @@ Follow the format to add your project:
     https://github.com/ryankert01/voronoi-diagram-toolkit
 11. `wei0107 <https://github.com/wei0107>`__ for
     `pixfoundry <wei0107/README.rst>`__:
-    https://github.com/wei0107/PixFoundry
-12. `chu-siang <https://github.com/chu-siang>`__ for
-    `O-GRPO <chu-siang/README.rst>`__:
-13. `Hikaru-shih <https://github.com/Hikaru-shih>`__ for
-    `FFTCore <Hikaru-shih/README.rst>`__:
-    https://github.com/Hikaru-shih/FFTCore
+    https://github.com/wei0107/pixfoundry
 
 .. note::
 

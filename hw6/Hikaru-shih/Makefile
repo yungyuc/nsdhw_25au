@@ -1,19 +1,18 @@
 CXX = g++
-CXXFLAGS = -O2 -std=c++17 -fPIC -Wall
+CXXFLAGS = -O3 -std=c++17 -fPIC -Wall -Wextra
 
-PYTHON = python3
-INC = $(shell $(PYTHON) -m pybind11 --includes)
-EXT = $(shell $(PYTHON)-config --extension-suffix)
+PY_INC = -I/usr/include/python3.10
+PYBIND11_INC = -I/usr/include/pybind11
 
 SRC = matrix.cpp
 HDR = matrix.hpp
 
-TARGET = _matrix$(EXT)
+TARGET = _matrix.cpython-310-x86_64-linux-gnu.so
 
 all: $(TARGET)
 
 $(TARGET): $(SRC) $(HDR)
-	$(CXX) $(CXXFLAGS) $(INC) -I. $(SRC) -shared -o $@
+	$(CXX) $(CXXFLAGS) $(PY_INC) $(PYBIND11_INC) -shared $(SRC) -o $@
 
 clean:
 	rm -f _matrix*.so

@@ -2,7 +2,11 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
-#include <mkl.h>
+#ifdef USE_MKL
+#include <mkl_cblas.h>
+#else
+#include <cblas.h>
+#endif
 #include <iostream>
 #include <string>
 #include <sstream>

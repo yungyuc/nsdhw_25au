@@ -1,24 +1,25 @@
 CXX = g++
 CXXFLAGS = -O3 -std=c++17 -fPIC -DUSE_MKL
 
-PY_INCLUDES = $(shell python3 -m pybind11 --includes)
-PY_LDFLAGS = $(shell python3-config --ldflags)
+PYTHON_INCLUDE = $(shell python3 -c "import sysconfig; print(sysconfig.get_paths()['include'])")
+PYTHON_LIBDIR  = $(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
+PYSUFFIX       = $(shell python3-config --extension-suffix)
 
-TARGET = _matrix$(shell python3-config --extension-suffix)
+PYBIND11 = -I/usr/include/pybind11
+
+TARGET = _matrix$(PYSUFFIX)
 
 SRC = mod.cpp
 
-LDFLAGS = $(PY_LDFLAGS) \
-          -Wl,--start-group \
-          -lmkl_intel_lp64 -lmkl_core -lmkl_sequential \
-          -Wl,--end-group \
-          -lpthread -lm -ldl
-
+LDFLAGS = -shared \
+          -L$(PYTHON_LIBDIR) \
+          -lmkl_rt -lpthread -lm -ldl
 
 all: $(TARGET)
 
 $(TARGET): $(SRC) matrix.hpp
-	$(CXX) $(CXXFLAGS) $(PY_INCLUDES) -shared $(SRC) -o $(TARGET) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -I$(PYTHON_INCLUDE) $(PYBIND11) \
+		-shared $(SRC) -o $(TARGET) $(LDFLAGS)
 
 clean:
 	rm -f $(TARGET)

@@ -4,7 +4,7 @@ CXXFLAGS := -std=c++17 -O3 -fPIC -Wall -Wextra -march=native
 # Python + pybind11 includes and libs
 PYINC := $(shell python3 -m pybind11 --includes)
 PYTHON_INCLUDES := $(shell python3-config --includes)
-PYTHON_LIBS := $(shell python3-config --ldflags)
+PYTHON_LIBS := $(shell python3-config --ldflags) 
 EXT := $(shell python3-config --extension-suffix)
 
 # BLAS (OpenBLAS or fallback) 

@@ -1,25 +1,35 @@
-CXX = g++
-CXXFLAGS = -O3 -std=c++17 -fPIC -DUSE_MKL
+CXX := g++
+CXXFLAGS = -std=c++17 -O3 -march=native -fPIC -fopenmp -Wall -Wextra
 
-PYTHON_INCLUDE = $(shell python3 -c "import sysconfig; print(sysconfig.get_paths()['include'])")
-PYTHON_LIBDIR  = $(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
-PYSUFFIX       = $(shell python3-config --extension-suffix)
+PYTHON = python3
 
-PYBIND11 = -I/usr/include/pybind11
+# Python include path
+PY_INCLUDE := -I$(shell $(PYTHON) -c "import sysconfig; print(sysconfig.get_path('include'))")
 
-TARGET = _matrix$(PYSUFFIX)
+# System pybind11 (CI has this)
+PYBIND11_INCLUDE := -I/usr/include/pybind11
 
-SRC = mod.cpp
+# Do not use numpy includes (not needed for HW6)
+NUMPY_INCLUDES :=
 
-LDFLAGS = -shared \
-          -L$(PYTHON_LIBDIR) \
-          -lmkl_rt -lpthread -lm -ldl
+# System BLAS (CI always has this)
+BLAS_LIB := -lblas -lpthread -lm -ldl
+
+# Output file name
+TARGET := _matrix$(shell $(PYTHON) -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
+
+# Collect includes
+INCLUDES := -I. $(PY_INCLUDE) $(PYBIND11_INCLUDE)
 
 all: $(TARGET)
 
-$(TARGET): $(SRC) matrix.hpp
-	$(CXX) $(CXXFLAGS) -I$(PYTHON_INCLUDE) $(PYBIND11) \
-		-shared $(SRC) -o $(TARGET) $(LDFLAGS)
+$(TARGET): mod.cpp matrix.hpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) mod.cpp -o $(TARGET) -shared $(BLAS_LIB)
+
+test: $(TARGET)
+	$(PYTHON) -m pytest -q -vv
 
 clean:
-	rm -f $(TARGET)
+	rm -f *.o *.so *.pyd
+
+.PHONY: all test clean
